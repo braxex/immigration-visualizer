@@ -13,6 +13,11 @@ class App extends Component {
         <p className="App-intro">
           To get started, edit <code>src/App.js</code> and save to reload.
         </p>
+        {React.createElement('p', null, 'hi there')}
+        <div>
+          <input name='lprOrNi' type="radio"></input>
+          <input name='lprOrNi' type="radio"></input>
+        </div>
       </div>
     );
   }
