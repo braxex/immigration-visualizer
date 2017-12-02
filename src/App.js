@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import {merge} from 'lodash';
-import * as d3 from 'd3-scale';
+import Visualizer from './Visualizer.js';
 
 class App extends Component {
 
@@ -21,10 +21,14 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
+        <header title="I'm a header" className="App-header">
           <h1 className="App-title">Immigration Visualizer</h1>
         </header>
-      <div id="D3-holder" className="D3-holder"></div>
+      <div id="D3-holder" className="D3-holder">
+        <Visualizer {...this.state}/>
+
+
+      </div>
         <div id="slider-box" className="slider-box">
           <input type="range" className="slider"
             min={this.props.yearBounds[0]}
