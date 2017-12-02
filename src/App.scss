@@ -24,3 +24,19 @@ $background-color: #b1e4a9;
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.D3-holder {
+  min-width: 500px;
+  min-height: 500px;
+  border: 1px solid black;
+  margin: auto;
+}
+
+.info-visualizer {
+  white-space: pre-wrap;
+  text-align: left;
+}
+
+.slider-box, .slider {
+  min-width: 500px;
+}
