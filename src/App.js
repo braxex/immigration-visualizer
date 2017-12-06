@@ -12,6 +12,7 @@ class App extends Component {
     const initialState = {
       LPR: {},
       NI: {},
+      toggle: 'neither',
       slider: this.props.yearBounds[0]
     };
     this.props.lprItems.forEach(function(item) {
@@ -53,7 +54,7 @@ class App extends Component {
 
           <div id="lpr-controls" className="lpr-controls">
             <label>LPR
-              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio"></input>
+              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.props.toggle)}></input>
             </label>
             {this.props.lprItems.map(function(item, index){
               return <LPRCheckbox key={index}
@@ -65,7 +66,7 @@ class App extends Component {
 
           <div id="ni-controls" className="ni-controls">
             <label>NI
-              <input name="radio" type="radio" id="ni-radio" className="ni-radio"></input>
+              <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.props.toggle)}></input>
             </label>
             {this.props.niItems.map(function(item, index){
               return <NICheckbox key={index}
@@ -106,6 +107,18 @@ class App extends Component {
       }
     })
     this.setState.bind(this)(newState)
+  }
+
+  changeToggleToLPR(toggle) {
+    this.setState.bind(this)({
+      toggle: 'LPR'
+    })
+  }
+
+  changeToggleToNI(toggle) {
+    this.setState.bind(this)({
+      toggle: 'NI'
+    })
   }
 }
 
@@ -194,6 +207,7 @@ App.defaultProps = {
       label: "Other"
     }
   ],
+  toggle: 'neither',
   yearBounds: [
     2005,
     2015
@@ -207,6 +221,5 @@ function InfoVis(data) {
     </div>
   )
 }
-
 
 export default App;
