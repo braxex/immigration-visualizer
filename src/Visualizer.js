@@ -40,8 +40,6 @@ class Visualizer extends Component {
   componentWillReceiveProps(nextProps) {
     console.log(this.props);
     console.log(nextProps);
-    console.log(this.props.LPR.total.checkedStatus);
-    console.log(nextProps.LPR.total.checkedStatus);
     const svg = d3.select('#thesvg');
     svg.selectAll('circle')
       .data(dataset)

@@ -7,6 +7,8 @@ class App extends Component {
 
   constructor(props) {
     super(props)
+
+    //Initial State Definitions
     const initialState = {
       LPR: {},
       NI: {},
@@ -15,20 +17,27 @@ class App extends Component {
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: false};
     })
+    this.props.niItems.forEach(function(item) {
+      initialState.NI[item.name] = {checkedStatus: false};
+    })
     this.state = initialState;
   }
 
   render() {
     return (
       <div className="App">
+
+        {/*Header Section*/}
         <header title="I'm a header" className="App-header">
           <h1 className="App-title">Immigration Visualizer</h1>
         </header>
-      <div id="D3-holder" className="D3-holder">
-        <Visualizer {...this.state}/>
 
+        {/*D3 Visualization Section*/}
+        <div id="D3-holder" className="D3-holder">
+          <Visualizer {...this.state}/>
+        </div>
 
-      </div>
+        {/*Slider Controls Section*/}
         <div id="slider-box" className="slider-box">
           <input type="range" className="slider"
             min={this.props.yearBounds[0]}
@@ -36,23 +45,37 @@ class App extends Component {
             onChange={(event) => this.changeSliderState(event.target.value)}
             value={this.state.slider}>
           </input>
-      </div>
-      <div id="controller-box" className="controller-box">
-        <div>
-          <label>LPR
-            <input name="radio" type="radio" id="lpr-radio" className="lpr-radio"></input>
-          </label>
-          {this.props.lprItems.map(function(item, index){
-            return <Checkbox key={index}
-            checkboxItem={item}
-            itemChecked={this.state.LPR[item.name].checkedStatus}
-            changeCheckboxState={ this.changeCheckboxState.bind(this)}/>;
-          }, this)}
         </div>
-        <div>
-          <input name="radio" type="radio" id="ni-radio" className="ni-radio"></input>
+
+        {/*Radio & Checkbox Control Section*/}
+        <div id="controller-box" className="controller-box">
+
+          <div id="lpr-controls" className="lpr-controls">
+            <label>LPR
+              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio"></input>
+            </label>
+            {this.props.lprItems.map(function(item, index){
+              return <LPRCheckbox key={index}
+                checkboxItem={item}
+                itemChecked={this.state.LPR[item.name].checkedStatus}
+                changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
+            }, this)}
+          </div>
+
+          <div id="ni-controls" className="ni-controls">
+            <label>NI
+              <input name="radio" type="radio" id="ni-radio" className="ni-radio"></input>
+            </label>
+            {this.props.niItems.map(function(item, index){
+              return <NICheckbox key={index}
+                checkboxItem={item}
+                itemChecked={this.state.NI[item.name].checkedStatus}
+                changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
+            }, this)}
+          </div>
         </div>
-      </div>
+
+        {/*Information Visualization Section (for build only, not prod)*/}
         <div>
           <InfoVis {...this.state}/>
         </div>
@@ -66,7 +89,7 @@ class App extends Component {
     })
   }
 
-  changeCheckboxState(shouldBeChecked,checkboxName) {
+  changeLPRCheckboxState(shouldBeChecked,checkboxName) {
     const newState = merge({},this.state,{
       LPR: {
         [checkboxName]: {checkedStatus: shouldBeChecked}
@@ -74,18 +97,44 @@ class App extends Component {
     })
     this.setState.bind(this)(newState)
   }
+
+  changeNICheckboxState(shouldBeChecked,checkboxName) {
+    const newState = merge({},this.state,{
+      NI: {
+        [checkboxName]: {checkedStatus: shouldBeChecked}
+      }
+    })
+    this.setState.bind(this)(newState)
+  }
 }
 
-class Checkbox extends Component {
+class LPRCheckbox extends Component {
   render() {
-    const {checkboxItem,itemChecked,changeCheckboxState} = this.props;
+    const {checkboxItem,itemChecked,changeLPRCheckboxState} = this.props;
     const {name, label} = checkboxItem;
     return (
       <span>
-      <label htmlFor={name}>{label}</label>
-      <input type="checkbox" checked={itemChecked}
-      onChange={(event) => {changeCheckboxState(event.target.checked,name)}}
-      id={name}></input>
+        <label htmlFor={name}>{label}</label>
+        <input type="checkbox" checked={itemChecked}
+               onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
+               id={name}>
+        </input>
+      </span>
+    )
+  }
+}
+
+class NICheckbox extends Component {
+  render() {
+    const {checkboxItem,itemChecked,changeNICheckboxState} = this.props;
+    const {name, label} = checkboxItem;
+    return (
+      <span>
+        <label htmlFor={name}>{label}</label>
+        <input type="checkbox" checked={itemChecked}
+               onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
+               id={name}>
+        </input>
       </span>
     )
   }
@@ -93,10 +142,6 @@ class Checkbox extends Component {
 
 App.defaultProps = {
   lprItems: [
-    {
-      name: "total",
-      label: "View All"
-    },
     {
       name: "immediateRelative",
       label: "Immediate Relative"
@@ -111,7 +156,7 @@ App.defaultProps = {
     },
     {
       name: "refugeeAsylee",
-      label: "Refugee/Asylee"
+      label: "Refugee & Asylee"
     },
     {
       name: "diversityLottery",
@@ -122,7 +167,29 @@ App.defaultProps = {
       label: "Adopted Orphans"
     },
     {
-      name: "other",
+      name: "otherLPR",
+      label: "Other"
+    }
+  ],
+  niItems: [
+    {
+      name: "temporaryVisitor",
+      label: "Temporary Visitor"
+    },
+    {
+      name: "studentExchange",
+      label: "Student & Exchange"
+    },
+    {
+      name: "temporaryWorker",
+      label: "Temporary Worker"
+    },
+    {
+      name: "diplomatRep",
+      label: "Diplomat & Representative"
+    },
+    {
+      name: "otherNI",
       label: "Other"
     }
   ],
