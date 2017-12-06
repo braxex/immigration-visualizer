@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import './App.min.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
 
@@ -39,6 +39,7 @@ class App extends Component {
 
         {/*Slider Controls Section*/}
         <div id="slider-box" className="slider-box">
+          <div id="year-display" className="year-display">Showing Data for {this.state.slider}</div>
           <input type="range" className="slider"
             min={this.props.yearBounds[0]}
             max={this.props.yearBounds[1]}
