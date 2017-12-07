@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.min.css';
+import 'font-awesome/css/font-awesome.min.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
 
@@ -12,8 +13,9 @@ class App extends Component {
     const initialState = {
       LPR: {},
       NI: {},
-      toggle: 'neither',
-      slider: this.props.yearBounds[0]
+      toggleState: 'neither',
+      sliderState: this.props.yearBounds[0],
+      playState: 'none'
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: false};
@@ -40,13 +42,17 @@ class App extends Component {
 
         {/*Slider Controls Section*/}
         <div id="slider-box" className="slider-box">
-          <div id="year-display" className="year-display">Showing Data for {this.state.slider}</div>
-          <input type="range" className="slider"
-            min={this.props.yearBounds[0]}
-            max={this.props.yearBounds[1]}
-            onChange={(event) => this.changeSliderState(event.target.value)}
-            value={this.state.slider}>
-          </input>
+          <div id="year-display" className="year-display">Showing Data for {this.state.sliderState}</div>
+          <div id="fix">
+            <i className="fa fa-play-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPlaying(this.state.playState)}></i>
+            <i className="fa fa-pause-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPaused(this.state.playState)}></i>
+            <input type="range" className="slider"
+              min={this.props.yearBounds[0]}
+              max={this.props.yearBounds[1]}
+              onChange={(event) => this.changeSliderState(event.target.value)}
+              value={this.state.sliderState}>
+            </input>
+          </div>
         </div>
 
         {/*Radio & Checkbox Control Section*/}
@@ -54,7 +60,7 @@ class App extends Component {
 
           <div id="lpr-controls" className="lpr-controls">
             <label>LPR
-              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.props.toggle)}></input>
+              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.state.toggleState)}></input>
             </label>
             {this.props.lprItems.map(function(item, index){
               return <LPRCheckbox key={index}
@@ -66,7 +72,7 @@ class App extends Component {
 
           <div id="ni-controls" className="ni-controls">
             <label>NI
-              <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.props.toggle)}></input>
+              <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.state.toggleState)}></input>
             </label>
             {this.props.niItems.map(function(item, index){
               return <NICheckbox key={index}
@@ -85,10 +91,15 @@ class App extends Component {
     );
   }
 
-  changeSliderState(sliderValue) {
+  changeSliderState(sliderValue,playing) {
     this.setState.bind(this)({
-      slider: sliderValue
+      sliderState: sliderValue
     })
+    this.setState.bind(this)({
+      playState: 'none'
+    })
+    console.log('this will reset the slideshow')
+    //TO-DO: reset play sequence, (gray out pause button, darken play button)?
   }
 
   changeLPRCheckboxState(shouldBeChecked,checkboxName) {
@@ -111,14 +122,42 @@ class App extends Component {
 
   changeToggleToLPR(toggle) {
     this.setState.bind(this)({
-      toggle: 'LPR'
+      toggleState: 'LPR'
     })
   }
 
   changeToggleToNI(toggle) {
     this.setState.bind(this)({
-      toggle: 'NI'
+      toggleState: 'NI'
     })
+  }
+
+  changePlayStateToPlaying(playState) {
+    if (playState === 'playing') {}
+    else if (playState === 'none') {
+      this.setState.bind(this)({
+        playState: 'playing'
+      })
+      console.log('this will start slideshow')
+      //TO-DO: begin play sequence, (gray out play button, darken pause button)?
+    } else if (playState === 'paused') {
+      this.setState.bind(this)({
+        playState: 'playing'
+      })
+      console.log('this will resume slideshow')
+      //TO-DO: resume play sequence, (gray out play button, darken pause button)?
+    }
+  }
+
+  changePlayStateToPaused(playState) {
+    if (playState === 'none' || playState === 'paused') {}
+    else if (playState === 'playing') {
+      this.setState.bind(this)({
+        playState: 'paused'
+      })
+      console.log('this will pause the slideshow')
+      //TO-DO: pause play sequence, gray out pause button, darken play button
+    }
   }
 }
 
@@ -207,11 +246,12 @@ App.defaultProps = {
       label: "Other"
     }
   ],
-  toggle: 'neither',
+  toggleState: 'neither',
   yearBounds: [
     2005,
     2015
-  ]
+  ],
+  playState: 'none'
 }
 
 function InfoVis(data) {
