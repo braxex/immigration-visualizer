@@ -98,7 +98,7 @@ class App extends Component {
     this.setState.bind(this)({
       playState: 'none'
     })
-    console.log('this will reset the slideshow')
+    //console.log('this will reset the slideshow')
     //TO-DO: reset play sequence, (gray out pause button, darken play button)?
   }
 
@@ -138,13 +138,13 @@ class App extends Component {
       this.setState.bind(this)({
         playState: 'playing'
       })
-      console.log('this will start slideshow')
+      //console.log('this will start slideshow')
       //TO-DO: begin play sequence, (gray out play button, darken pause button)?
     } else if (playState === 'paused') {
       this.setState.bind(this)({
         playState: 'playing'
       })
-      console.log('this will resume slideshow')
+      //console.log('this will resume slideshow')
       //TO-DO: resume play sequence, (gray out play button, darken pause button)?
     }
   }

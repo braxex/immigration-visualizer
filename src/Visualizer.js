@@ -1,22 +1,22 @@
 /*D3 Visualizer*/
 import React, { Component } from 'react';
 import './Visualizer.css';
-import {merge} from 'lodash';
 import * as d3 from 'd3';
 let dataset = [{}];
 
+//Variable Declaration
 const circleRadius = 10;
 const circleDiameter = circleRadius*2;
 let width = 0;
 let height = 0;
 
+//Called when Visualizer renders
 function initializeD3(dataset) {
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth;
   height = reactContainer.offsetHeight;
-  console.log(d3.select);
-  console.log(d3);
-  console.log(d3.select('#d3-mount-point'));
+  //console.log(d3.select);
+  //console.log(d3.select('#d3-mount-point'));
   const svg = d3.select('#d3-mount-point').append('svg')
     .attr('height', height)
     .attr('width', width)
@@ -32,14 +32,14 @@ function initializeD3(dataset) {
 }
 
 class Visualizer extends Component {
-
   shouldComponentUpdate() {
-    return false; // This prevents future re-renders of this component
+    return false; //prevents future re-renders of this component
   }
 
+  //re-runs each time some prop is changed
   componentWillReceiveProps(nextProps) {
-    console.log(this.props);
-    console.log(nextProps);
+    //console.log('State was: ', this.props);
+    console.log('State is: ', nextProps);
     const svg = d3.select('#thesvg');
     svg.selectAll('circle')
       .data(dataset)
@@ -51,23 +51,23 @@ class Visualizer extends Component {
   componentDidMount() {
     d3.csv('./lpr2015.csv', (err, data) => {
       if (err) {
-
         console.log(err)
       } else {
-        console.log(data)
+        console.log('Current dataset: ', data)
         dataset = data;
         initializeD3(dataset);
       }
     })
     }
 
-
-
   render() {
     return (
       <div id="d3-mount-point" ref={(elem) => { this.div = elem; }} />
     );
   }
+
+
+
 }
 
 
