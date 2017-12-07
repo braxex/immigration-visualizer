@@ -1,5 +1,5 @@
 //Variable Declaration
-$background-color: #b1e4a9;
+$background-color: #ffffff;
 
 //General Styling
 .App {
@@ -9,9 +9,9 @@ $background-color: #b1e4a9;
 //Header Styling
 .App-header {
   background-color: $background-color;
-  height: 150px;
+  height: 50px;
   padding: 20px;
-  color: white;
+  color: black;
 }
 
 .App-title {
@@ -21,27 +21,19 @@ $background-color: #b1e4a9;
 //D3 Section Styling
 .D3-holder {
   min-width: 500px;
-  min-height: 500px;
+  min-height: 625px;
   border: 1px solid black;
   margin: auto;
 }
 
+
 //Slider Section Styling
-.fa {
-  color: #666666;
-  margin-right: 10px;
-}
-
-.hidden {
-  display: none;
-}
-
 .year-display {
   margin: 10px auto -5px auto;
 }
 
 .slider-box {
-  width: 500px;
+  width: 700px;
   max-width: 95%;
   margin: 10px auto;
   height: 50px;
@@ -51,7 +43,7 @@ $background-color: #b1e4a9;
   height: 20px;
   -webkit-appearance: none;
   margin: 10px auto;
-  width: 80%;
+  width: 60%;
 }
 .slider:focus {
   outline: none;
@@ -137,7 +129,43 @@ $background-color: #b1e4a9;
   background: #DDDDDD;
 }
 
+//Play Controls Section Styling
+.play-controls {
+  margin: -10px auto 10px auto;
+}
 
+.fa {
+  color: #666666;
+  margin-right: 10px;
+}
+
+//Main Controls Section Styling
+
+.ni-controls, .lpr-controls {
+  display: flex;
+}
+
+.controls {
+  width: 1150px;
+  max-width: 95%;
+  margin: auto;
+  text-align: left;
+}
+
+.toggle-div {
+  min-width: 75px;
+  text-align: right;
+  align-self: center;
+  margin-right: 5px;
+}
+
+.box-div label {
+  margin: 0px 5px;
+}
+
+.box-div {
+  margin-left: 5px;
+}
 
 //Pre-Prod Information Visualizer Styling
 .info-visualizer {

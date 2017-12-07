@@ -44,8 +44,6 @@ class App extends Component {
         <div id="slider-box" className="slider-box">
           <div id="year-display" className="year-display">Showing Data for {this.state.sliderState}</div>
           <div id="fix">
-            <i className="fa fa-play-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPlaying(this.state.playState)}></i>
-            <i className="fa fa-pause-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPaused(this.state.playState)}></i>
             <input type="range" className="slider"
               min={this.props.yearBounds[0]}
               max={this.props.yearBounds[1]}
@@ -55,31 +53,44 @@ class App extends Component {
           </div>
         </div>
 
+        {/*Play Control Section*/}
+        <div className='play-controls'>
+          <i className="fa fa-undo fa-2x" aria-hidden="true"></i>
+          <i className="fa fa-play-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPlaying(this.state.playState)}></i>
+          <i className="fa fa-pause-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPaused(this.state.playState)}></i>
+        </div>
+
         {/*Radio & Checkbox Control Section*/}
         <div id="controller-box" className="controller-box">
-
-          <div id="lpr-controls" className="lpr-controls">
-            <label>LPR
-              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.state.toggleState)}></input>
-            </label>
-            {this.props.lprItems.map(function(item, index){
-              return <LPRCheckbox key={index}
-                checkboxItem={item}
-                itemChecked={this.state.LPR[item.name].checkedStatus}
-                changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
-            }, this)}
+          <div id="lpr-controls" className="controls lpr-controls">
+            <div className='toggle-div'>
+              <label>LPR
+                <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.state.toggleState)}></input>
+              </label>
+            </div>
+            <div className='box-div'>
+              {this.props.lprItems.map(function(item, index){
+                return <LPRCheckbox key={index}
+                  checkboxItem={item}
+                  itemChecked={this.state.LPR[item.name].checkedStatus}
+                  changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
+              }, this)}
+            </div>
           </div>
-
-          <div id="ni-controls" className="ni-controls">
-            <label>NI
-              <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.state.toggleState)}></input>
-            </label>
-            {this.props.niItems.map(function(item, index){
-              return <NICheckbox key={index}
-                checkboxItem={item}
-                itemChecked={this.state.NI[item.name].checkedStatus}
-                changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
-            }, this)}
+          <div id="ni-controls" className="controls ni-controls">
+            <div className='toggle-div'>
+              <label>NI
+                <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.state.toggleState)}></input>
+              </label>
+            </div>
+            <div className='box-div'>
+              {this.props.niItems.map(function(item, index){
+                return <NICheckbox key={index}
+                  checkboxItem={item}
+                  itemChecked={this.state.NI[item.name].checkedStatus}
+                  changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
+              }, this)}
+            </div>
           </div>
         </div>
 
@@ -167,11 +178,11 @@ class LPRCheckbox extends Component {
     const {name, label} = checkboxItem;
     return (
       <span>
-        <label htmlFor={name}>{label}</label>
         <input type="checkbox" checked={itemChecked}
                onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
                id={name}>
         </input>
+        <label htmlFor={name}>{label}</label>
       </span>
     )
   }
@@ -183,11 +194,11 @@ class NICheckbox extends Component {
     const {name, label} = checkboxItem;
     return (
       <span>
-        <label htmlFor={name}>{label}</label>
         <input type="checkbox" checked={itemChecked}
                onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
                id={name}>
         </input>
+        <label htmlFor={name}>{label}</label>
       </span>
     )
   }
