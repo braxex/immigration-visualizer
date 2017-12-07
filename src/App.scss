@@ -27,21 +27,31 @@ $background-color: #b1e4a9;
 }
 
 //Slider Section Styling
+.fa {
+  color: #666666;
+  margin-right: 10px;
+}
+
+.hidden {
+  display: none;
+}
+
 .year-display {
   margin: 10px auto -5px auto;
 }
 
-.slider-box, .slider {
-  width: 450px;
+.slider-box {
+  width: 500px;
   max-width: 95%;
-  margin: auto;
+  margin: 10px auto;
+  height: 50px;
 }
 
 .slider {  //(assist -- CSS Portal)
   height: 20px;
   -webkit-appearance: none;
   margin: 10px auto;
-  width: 100%;
+  width: 80%;
 }
 .slider:focus {
   outline: none;
