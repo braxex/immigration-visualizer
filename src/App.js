@@ -13,12 +13,12 @@ class App extends Component {
     const initialState = {
       LPR: {},
       NI: {},
-      toggleState: 'neither',
-      sliderState: this.props.yearBounds[0],
-      playState: 'none'
+      radioDataset: 'LPR',
+      dataYear: this.props.yearBounds[0],
+      isPlaying: false
     };
     this.props.lprItems.forEach(function(item) {
-      initialState.LPR[item.name] = {checkedStatus: false};
+      initialState.LPR[item.name] = {checkedStatus: true};
     })
     this.props.niItems.forEach(function(item) {
       initialState.NI[item.name] = {checkedStatus: false};
@@ -39,58 +39,54 @@ class App extends Component {
         <div id="D3-holder" className="D3-holder">
           <Visualizer {...this.state}/>
         </div>
+        <div id="year-display" className="year-display">Data: US Department of Homeland Security, {this.state.dataYear}</div>
 
-        {/*Slider Controls Section*/}
+        {/*Slider & Play Controls Section*/}
         <div id="slider-box" className="slider-box">
-          <div id="year-display" className="year-display">Showing Data for {this.state.sliderState}</div>
-          <div id="fix">
+          <div>
+            <i className={`fa fa-${this.state.isPlaying ? 'pause' : 'play'}-circle-o fa-2x`}
+              aria-hidden="true" onClick={() => this.toggleIsPlaying(this.state.isPlaying)}></i>
             <input type="range" className="slider"
               min={this.props.yearBounds[0]}
               max={this.props.yearBounds[1]}
-              onChange={(event) => this.changeSliderState(event.target.value)}
-              value={this.state.sliderState}>
+              onChange={(event) => this.changeDataYear(event.target.value)}
+              value={this.state.dataYear}>
             </input>
           </div>
         </div>
 
-        {/*Play Control Section*/}
-        <div className='play-controls'>
-          <i className="fa fa-undo fa-2x" aria-hidden="true"></i>
-          <i className="fa fa-play-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPlaying(this.state.playState)}></i>
-          <i className="fa fa-pause-circle-o fa-2x" aria-hidden="true" onClick={() => this.changePlayStateToPaused(this.state.playState)}></i>
-        </div>
-
-        {/*Radio & Checkbox Control Section*/}
+        {/*Radio Control Section*/}
         <div id="controller-box" className="controller-box">
-          <div id="lpr-controls" className="controls lpr-controls">
-            <div className='toggle-div'>
-              <label>LPR
-                <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" onChange={() => this.changeToggleToLPR(this.state.toggleState)}></input>
-              </label>
-            </div>
-            <div className='box-div'>
-              {this.props.lprItems.map(function(item, index){
-                return <LPRCheckbox key={index}
-                  checkboxItem={item}
-                  itemChecked={this.state.LPR[item.name].checkedStatus}
-                  changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
-              }, this)}
-            </div>
+          <div id="toggle-controls" className="toggle-controls">
+            <label title="Lawful Permanent Resident (LPR)">LPR
+              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
+                defaultChecked={true}
+                onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
+            </label>
+            <label title="Nonimmigrant (NI)">NI
+              <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
+                onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
+            </label>
           </div>
-          <div id="ni-controls" className="controls ni-controls">
-            <div className='toggle-div'>
-              <label>NI
-                <input name="radio" type="radio" id="ni-radio" className="ni-radio" onChange={() => this.changeToggleToNI(this.state.toggleState)}></input>
-              </label>
-            </div>
-            <div className='box-div'>
-              {this.props.niItems.map(function(item, index){
-                return <NICheckbox key={index}
-                  checkboxItem={item}
-                  itemChecked={this.state.NI[item.name].checkedStatus}
-                  changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
-              }, this)}
-            </div>
+
+        {/*Checkbox Control Section*/}
+          <div id="main-checkbox-div" className="main-checkbox-div">
+              <div className='checkbox-holder lpr-checkbox-div'>
+                {this.props.lprItems.map(function(item, index){
+                  return <LPRCheckbox key={index}
+                    checkboxItem={item}
+                    itemChecked={this.state.LPR[item.name].checkedStatus}
+                    changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
+                }, this)}
+              </div>
+              <div className='checkbox-holder ni-checkbox-div'>
+                {this.props.niItems.map(function(item, index){
+                  return <NICheckbox key={index}
+                    checkboxItem={item}
+                    itemChecked={this.state.NI[item.name].checkedStatus}
+                    changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
+                }, this)}
+              </div>
           </div>
         </div>
 
@@ -102,12 +98,10 @@ class App extends Component {
     );
   }
 
-  changeSliderState(sliderValue,playing) {
+  changeDataYear(sliderValue,playing) {
     this.setState.bind(this)({
-      sliderState: sliderValue
-    })
-    this.setState.bind(this)({
-      playState: 'none'
+      dataYear: sliderValue,
+      isPlaying: false
     })
     //console.log('this will reset the slideshow')
     //TO-DO: reset play sequence, (gray out pause button, darken play button)?
@@ -131,44 +125,16 @@ class App extends Component {
     this.setState.bind(this)(newState)
   }
 
-  changeToggleToLPR(toggle) {
+  changeRadioDataset(radioValue) {
     this.setState.bind(this)({
-      toggleState: 'LPR'
+      radioDataset: radioValue
     })
   }
 
-  changeToggleToNI(toggle) {
+  toggleIsPlaying(playState) {
     this.setState.bind(this)({
-      toggleState: 'NI'
+      isPlaying: !playState
     })
-  }
-
-  changePlayStateToPlaying(playState) {
-    if (playState === 'playing') {}
-    else if (playState === 'none') {
-      this.setState.bind(this)({
-        playState: 'playing'
-      })
-      //console.log('this will start slideshow')
-      //TO-DO: begin play sequence, (gray out play button, darken pause button)?
-    } else if (playState === 'paused') {
-      this.setState.bind(this)({
-        playState: 'playing'
-      })
-      //console.log('this will resume slideshow')
-      //TO-DO: resume play sequence, (gray out play button, darken pause button)?
-    }
-  }
-
-  changePlayStateToPaused(playState) {
-    if (playState === 'none' || playState === 'paused') {}
-    else if (playState === 'playing') {
-      this.setState.bind(this)({
-        playState: 'paused'
-      })
-      console.log('this will pause the slideshow')
-      //TO-DO: pause play sequence, gray out pause button, darken play button
-    }
   }
 }
 
@@ -177,13 +143,13 @@ class LPRCheckbox extends Component {
     const {checkboxItem,itemChecked,changeLPRCheckboxState} = this.props;
     const {name, label} = checkboxItem;
     return (
-      <span>
-        <input type="checkbox" checked={itemChecked}
+      <div className="checkbox-item-holder">
+        <input className="checkbox" type="checkbox" checked={itemChecked}
                onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
                id={name}>
         </input>
-        <label htmlFor={name}>{label}</label>
-      </span>
+        <label className="checkbox-label" htmlFor={name}>{label}</label>
+      </div>
     )
   }
 }
@@ -227,10 +193,6 @@ App.defaultProps = {
       label: "Diversity Lottery"
     },
     {
-      name: "adoptedOrphans",
-      label: "Adopted Orphans"
-    },
-    {
       name: "otherLPR",
       label: "Other"
     }
@@ -257,12 +219,10 @@ App.defaultProps = {
       label: "Other"
     }
   ],
-  toggleState: 'neither',
   yearBounds: [
     2005,
     2015
-  ],
-  playState: 'none'
+  ]
 }
 
 function InfoVis(data) {

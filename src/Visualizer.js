@@ -2,19 +2,19 @@
 import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
-import * as d3geo from 'd3-geo';
 import * as d3geoproj from 'd3-geo-projection';
-import * as topojson from 'topojson-client';
+//import * as d3geo from 'd3-geo';
+//import * as topojson from 'topojson-client';
 
 //Variable Declaration
 //const circleRadius = 10;
 //const circleDiameter = circleRadius*2;
 let width = 0;
 let height = 0;
-let dataset = [{}];
+//let dataset = [{}];
 let worldMap;
 let baseCountryColor= '#444444';
-let baseBoundaryColor= '#ffffff';
+//let baseBoundaryColor= '#ffffff';
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
@@ -25,7 +25,7 @@ function initializeD3(worldMap) {
     .attr('height', height)
     .attr('width', width)
     .call(d3.zoom()
-      .scaleExtent([1,4])   //zoom bounds
+      .scaleExtent([1,5])   //zoom bounds
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
     }))
@@ -34,9 +34,9 @@ function initializeD3(worldMap) {
   var g = svg.append('g');
 
   var projection = d3geoproj.geoCylindricalStereographic() //more options here: https://goo.gl/9AMQao
-    .scale(200)
+    .scale(170)
     .rotate([-11,0])
-    .center([0,22.5])
+    .center([0,22])
     .translate([width/2,height/2]);
 
   var geoPath = d3.geoPath()

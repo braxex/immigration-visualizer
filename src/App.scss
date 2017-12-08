@@ -21,7 +21,7 @@ $background-color: #ffffff;
 //D3 Section Styling
 .D3-holder {
   min-width: 500px;
-  min-height: 625px;
+  min-height: 500px;
   border: 1px solid black;
   margin: auto;
 }
@@ -29,8 +29,14 @@ $background-color: #ffffff;
 
 //Slider Section Styling
 .year-display {
-  margin: 10px auto -5px auto;
+  margin: 5px 10px -5px 0px;
+  text-align: right;
+  font-size: 12px;
+  color: #444444;
 }
+
+
+//Play Controls Section Styling
 
 .slider-box {
   width: 700px;
@@ -39,10 +45,16 @@ $background-color: #ffffff;
   height: 50px;
 }
 
+.fa {
+  color: #666666;
+  margin-right: 10px;
+}
+
 .slider {  //(assist -- CSS Portal)
   height: 20px;
   -webkit-appearance: none;
   margin: 10px auto;
+  margin-top: 5px;
   width: 60%;
 }
 .slider:focus {
@@ -129,43 +141,37 @@ $background-color: #ffffff;
   background: #DDDDDD;
 }
 
-//Play Controls Section Styling
-.play-controls {
-  margin: -10px auto 10px auto;
-}
-
-.fa {
-  color: #666666;
-  margin-right: 10px;
-}
-
 //Main Controls Section Styling
-
-.ni-controls, .lpr-controls {
-  display: flex;
-}
-
-.controls {
-  width: 1150px;
+.controller-box {
+  width: 525px;
   max-width: 95%;
   margin: auto;
-  text-align: left;
 }
 
-.toggle-div {
+.controller-box * {
+  margin: 3px;
+  display: inline-block;
+}
+
+.toggle-controls label {
   min-width: 75px;
-  text-align: right;
+  text-align: center;
   align-self: center;
   margin-right: 5px;
 }
 
-.box-div label {
-  margin: 0px 5px;
+.checkbox-holder {
+  border: 1px solid black;
 }
 
-.box-div {
-  margin-left: 5px;
+.checkbox-item-holder {
+  display: inline-block;
 }
+
+[type=checkbox] {
+  vertical-align: middle;
+}
+
 
 //Pre-Prod Information Visualizer Styling
 .info-visualizer {
