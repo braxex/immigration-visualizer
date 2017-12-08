@@ -2,8 +2,9 @@
 import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
+import * as d3geo from 'd3-geo';
 import * as d3geoproj from 'd3-geo-projection';
-//import * as topojson from 'topojson';
+import * as topojson from 'topojson-client';
 
 //Variable Declaration
 //const circleRadius = 10;
@@ -23,7 +24,9 @@ function initializeD3(worldMap) {
   let svg = d3.select('#d3-mount-point').append('svg')
     .attr('height', height)
     .attr('width', width)
-    .call(d3.zoom().on('zoom',function() {
+    .call(d3.zoom()
+      .scaleExtent([1,4])   //zoom bounds
+      .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
     }))
     .append('g')
@@ -73,8 +76,9 @@ class Visualizer extends Component {
       .attr('cy',d => circleRadius+Math.random()*(height-circleDiameter))
   }*/
 
+
   componentDidMount() {
-    d3.json('./world_geo.json', (err,data) => {
+    d3.json('./dum_geo.json', (err,data) => {
       if (err) {
         console.log(err)
       } else {
