@@ -4,20 +4,26 @@ import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
 //import * as d3geo from 'd3-geo';
-//import * as topojson from 'topojson-client';
+//import * as topojson from 'topojson-client';\
 
-//Variable Declaration
+
+//Variable Declarations
+
+/*Dataset Variables/Messages*/
+//let lprMainMsg = "Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.";
+//let niMainMsg = "Data not shown for those with unknown or nonexistent country of citizenship and for countries where total immigrant population in currently selected year was less than 10. ";
+//let dwMainMsg = "Data withheld to limit disclosure, per US Government."
+
+/*Other Variables*/
 //const circleRadius = 10;
 //const circleDiameter = circleRadius*2;
 let width = 0;
 let height = 0;
-//let dataset = [{}];
+let dataset = [{}];
 let worldMap;
 let baseCountryColor= '#444444';
 //let baseBoundaryColor= '#ffffff';
-/*Dataset Variables/Messages*/
-let lprMainMsg = "Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.";
-let niMainMsg = "Data not shown for those with unknown or nonexistent country of citizenship and for countries where total immigrant population in currently selected year was less than 10. ";
+
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
@@ -51,15 +57,6 @@ function initializeD3(worldMap) {
     .append('path')
     .attr('fill',baseCountryColor)
     .attr('d',geoPath);
-
-  /*svg.selectAll('circle')
-    .data(dataset)
-    .enter()
-    .append('circle')
-      .attr('cx',d => circleRadius+Math.random()*(width-circleDiameter))
-      .attr('cy',d => circleRadius+Math.random()*(height-circleDiameter))
-      .attr('r',circleRadius)
-      .attr('fill','#666666')*/
 }
 
 class Visualizer extends Component {
@@ -68,39 +65,81 @@ class Visualizer extends Component {
   }
 
   //re-runs each time some prop is changed
-  /*componentWillReceiveProps(nextProps) {
-    //console.log('State was: ', this.props);
-    console.log('State is: ', nextProps);
-    const svg = d3.select('#thesvg');
-    svg.selectAll('circle')
-      .data(dataset)
-      .attr('fill',() => '#'+Math.floor(Math.random()*16777215).toString(16))
-      .attr('cx',d => circleRadius+Math.random()*(width-circleDiameter))
-      .attr('cy',d => circleRadius+Math.random()*(height-circleDiameter))
-  }*/
+  componentWillReceiveProps(nextProps) {
 
+    /*shows state change*/
+    console.log('State was: ', this.props);
+    console.log('State is: ', nextProps);
+
+    /*loads new dataset and prepares for manipulation*/
+    d3.csv(("./"+nextProps.radioDataset+nextProps.dataYear+".csv"), function(err, data) {
+      if (err) {
+        console.log(err)
+      } else {
+        data.forEach(function(d) {
+          /*convert data to dataset array*/
+          if(nextProps.radioDataset==="LPR") {
+            /*lpr-specific headings*/
+            d.immediateRelative = +d.immediateRelative;
+            d.familySponsored = +d.familySponsored;
+            d.employmentBased = +d.employmentBased;
+            d.refugeeAsylee = +d.refugeeAsylee;
+            d.diversityLottery = +d.diversityLottery;
+            d.adoptedOrphans = +d.adoptedOrphans;
+          } else {
+            /*ni-specific headings*/
+            d.temporaryVisitor = +d.temporaryVisitor;
+            d.studentExchange = +d.studentExchange;
+            d.temporaryWorker = +d.temporaryWorker;
+            d.diplomatRep = +d.diplomatRep;
+          }
+          /*shared headings*/
+          d.other = +d.other;
+          d.total = +d.total;
+        });
+      dataset = data;
+      /*shows new dataset array*/
+      console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), dataset);
+      }
+    });
+
+    /*calculates calcTotal for each array item*/
+
+
+
+  }
 
   componentDidMount() {
+    //mount initial map
     d3.json('./dum_geo.json', (err,data) => {
       if (err) {
         console.log(err)
       } else {
-        console.log('map data loaded: ', data)
+        console.log('MAP DATA:', data)
         worldMap = data;
         initializeD3(worldMap);
       }
     });
-  }
-
-    /*d3.csv('./lpr2015.csv', (err, data) => {
+    //mount initial dataset
+    d3.csv('./lpr2005.csv', function(err, data) {
       if (err) {
         console.log(err)
       } else {
-        console.log('Current dataset: ', data)
-        dataset = data;
-        initializeD3(dataset);
+        data.forEach(function(d) {
+          d.immediateRelative = +d.immediateRelative;
+          d.familySponsored = +d.familySponsored;
+          d.employmentBased = +d.employmentBased;
+          d.refugeeAsylee = +d.refugeeAsylee;
+          d.diversityLottery = +d.diversityLottery;
+          d.other = +d.other;
+          d.adoptedOrphans = +d.adoptedOrphans;
+          d.total = +d.total;
+        });
+      dataset = data;
+      console.log('DATASET IS LPR2005', dataset);
       }
-    })*/
+    });
+  }
 
   render() {
     return (
@@ -112,7 +151,23 @@ class Visualizer extends Component {
 
 }
 
-
-
+//for lpr files
+d3.csv('./lpr2005.csv', function(err, data) {
+  if (err) {
+    console.log(err)
+  } else {
+    data.forEach(function(d) {
+      d.immediateRelative = +d.immediateRelative;
+      d.familySponsored = +d.familySponsored;
+      d.employmentBased = +d.employmentBased;
+      d.refugeeAsylee = +d.refugeeAsylee;
+      d.diversityLottery = +d.diversityLottery;
+      d.other = +d.other;
+      d.adoptedOrphans = +d.adoptedOrphans;
+      d.total = +d.total;
+    });
+  dataset = data;
+  }
+});
 
 export default Visualizer;
