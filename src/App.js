@@ -104,7 +104,6 @@ class App extends Component {
       isPlaying: false
     })
     //console.log('this will reset the slideshow')
-    //TO-DO: reset play sequence, (gray out pause button, darken play button)?
   }
 
   changeLPRCheckboxState(shouldBeChecked,checkboxName) {
