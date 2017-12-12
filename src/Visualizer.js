@@ -15,6 +15,9 @@ let height = 0;
 let worldMap;
 let baseCountryColor= '#444444';
 //let baseBoundaryColor= '#ffffff';
+/*Dataset Variables/Messages*/
+let lprMainMsg = "Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.";
+let niMainMsg = "Data not shown for those with unknown or nonexistent country of citizenship and for countries where total immigrant population in currently selected year was less than 10. ";
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
