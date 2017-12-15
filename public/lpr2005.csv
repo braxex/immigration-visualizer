@@ -1,15 +1,15 @@
-birthCountry,immediateRelative,familySponsored,employmentBased,refugeeAsylee,diversityLottery,other,adoptedOrphans,total,countryNote
-Afghanistan,517,143,16,4049,16,8,0,4749,
-Albania,2036,125,207,1137,2438,4,10,5947,
-Algeria,404,26,133,206,341,5,0,1115,
+birthCountry,immediateRelative,familySponsored,employmentBased,refugeeAsylee,diversityLottery,other,adoptedOrphans,total,countryNote,id
+Afghanistan,517,143,16,4049,16,8,0,4749,,AFG
+Albania,2036,125,207,1137,2438,4,10,5947,,ALB
+Algeria,404,26,133,206,341,5,0,1115,,DZA
 American Samoa,dw,dw,0,0,0,0,0,15,
-Angola,74,18,35,58,3,0,0,188,
+Angola,74,18,35,58,3,0,0,188,,AGO
 Anguilla,19,11,5,0,0,0,0,35,
 Antigua and Barbuda,240,173,20,0,dw,dw,0,440,
-Argentina,3129,195,3382,279,69,27,0,7081,
+Argentina,3129,195,3382,279,69,27,0,7081,,ARG
 Armenia,750,131,237,811,580,82,23,2591,"Does not include data for the former Soviet Union (dissolved in 1993), which accounted for less than 0.3% of global US immigration in this year. See Russia for inclusion of this data."
 Aruba,99,0,31,0,0,0,0,158,"Includes data for the Netherlands Antilles (dissolved in 2010), which accounted for less than 0.1% of global US immigration in this year. The included former country's data accounts for approximately 73.5% of the displayed Aruban data."
-Australia,1489,69,1383,3,239,10,0,3193,
+Australia,1489,69,1383,3,239,10,0,3193,,AUS
 Austria,220,dw,236,32,32,dw,0,532,
 Azerbaijan,253,21,64,938,162,85,0,1523,"Does not include data for the former Soviet Union (dissolved in 1993), which accounted for less than 0.3% of global US immigration in this year. See Russia for inclusion of this data."
 Bahamas,473,79,104,5,11,26,0,698,

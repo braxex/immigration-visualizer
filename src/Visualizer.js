@@ -3,16 +3,19 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
+import * as d3sc from 'd3-scale-chromatic';
 //import * as d3geo from 'd3-geo';
-//import * as topojson from 'topojson-client';\
+import * as topojson from 'topojson-client';
 
+var hackD3 = d3;
+var hackD3SC = d3sc;
 
 //Variable Declarations
-
 /*Dataset Variables/Messages*/
-//let lprMainMsg = "Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.";
-//let niMainMsg = "Data not shown for those with unknown or nonexistent country of citizenship and for countries where total immigrant population in currently selected year was less than 10. ";
-//let dwMainMsg = "Data withheld to limit disclosure, per US Government."
+//let lprMainNote = "Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.";
+//let niMainNote = "Data not shown for those with unknown or nonexistent country of citizenship and for countries where total immigrant population in currently selected year was less than 10. ";
+//let dwMainNote = "DW = Data withheld to limit disclosure.";
+//let aoMainNote = "Adopted orphan data included in 'other' category";
 
 /*Other Variables*/
 //const circleRadius = 10;
@@ -21,8 +24,17 @@ let width = 0;
 let height = 0;
 let dataset = [{}];
 let worldMap;
-let baseCountryColor= '#444444';
+let baseCountryColor= "#"+((1<<24)*Math.random()|0).toString(16);
 //let baseBoundaryColor= '#ffffff';
+
+var x = d3.scaleLinear()
+    .domain([2,10])
+    .rangeRound([600, 860]);
+
+var color = d3.scaleLinear()
+    //.domain(d3.range(140, 1379302771))
+    .domain([0,2.5,5,7.5,10])
+    .range(d3sc.schemeBlues[9].slice(3));
 
 
 //Called when Visualizer renders
@@ -33,12 +45,13 @@ function initializeD3(worldMap) {
   let svg = d3.select('#d3-mount-point').append('svg')
     .attr('height', height)
     .attr('width', width)
+    //makes zoom possible
     .call(d3.zoom()
       .scaleExtent([1,5])   //zoom bounds
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
     }))
-    .append('g')
+    .append('g') //needed for zoom
 
   var g = svg.append('g');
 
@@ -55,7 +68,8 @@ function initializeD3(worldMap) {
     .data(worldMap.features)
     .enter()
     .append('path')
-    .attr('fill',baseCountryColor)
+    .attr('fill', function(d) {return color((d.properties.POP_EST/7383089462)*100)})
+    //.attr('fill', function(d) {return color(d.properties.POP_EST)})
     .attr('d',geoPath);
 }
 
@@ -68,7 +82,7 @@ class Visualizer extends Component {
   componentWillReceiveProps(nextProps) {
 
     /*shows state change*/
-    console.log('State was: ', this.props);
+    //console.log('State was: ', this.props);
     console.log('State is: ', nextProps);
 
     /*loads new dataset and prepares for manipulation*/
@@ -102,41 +116,38 @@ class Visualizer extends Component {
       console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), dataset);
       }
     });
-
-    /*calculates calcTotal for each array item*/
-
-
-
   }
 
   componentDidMount() {
     //mount initial map
-    d3.json('./dum_geo.json', (err,data) => {
+    d3.json('./dum_geo.json', (err,map) => {
       if (err) {
         console.log(err)
       } else {
-        console.log('MAP DATA:', data)
-        worldMap = data;
-        initializeD3(worldMap);
-      }
-    });
-    //mount initial dataset
-    d3.csv('./lpr2005.csv', function(err, data) {
-      if (err) {
-        console.log(err)
-      } else {
-        data.forEach(function(d) {
-          d.immediateRelative = +d.immediateRelative;
-          d.familySponsored = +d.familySponsored;
-          d.employmentBased = +d.employmentBased;
-          d.refugeeAsylee = +d.refugeeAsylee;
-          d.diversityLottery = +d.diversityLottery;
-          d.other = +d.other;
-          d.adoptedOrphans = +d.adoptedOrphans;
-          d.total = +d.total;
+        console.log('MAP DATA:', map)
+
+        d3.csv('./lpr2005.csv', function(err, countries) {
+          if (err) {
+            console.log(err)
+          } else {
+            //mount initial dataset
+            countries.forEach(function(d) {
+              d.immediateRelative = +d.immediateRelative;
+              d.familySponsored = +d.familySponsored;
+              d.employmentBased = +d.employmentBased;
+              d.refugeeAsylee = +d.refugeeAsylee;
+              d.diversityLottery = +d.diversityLottery;
+              d.other = +d.other;
+              d.adoptedOrphans = +d.adoptedOrphans;
+              d.total = +d.total;
+            });
+            worldMap = map;
+            initializeD3(worldMap);
+          dataset = countries;
+
+          console.log('DATASET IS LPR2005', dataset);
+          }
         });
-      dataset = data;
-      console.log('DATASET IS LPR2005', dataset);
       }
     });
   }
@@ -169,5 +180,30 @@ d3.csv('./lpr2005.csv', function(err, data) {
   dataset = data;
   }
 });
+
+// the three buckets
+// var worldMap = worldMap.features
+// var countries = csvData
+// var flags = [['name', 'href']]
+
+// var countryFlags = countries.map(country => {...country, href: flags.find(flag => flag[0] === country.birthCountry)[1]  })
+/*
+countryFlagsWorldMap = worldMap.features.map(f => ({
+  name: f.properties.NAME,
+  population: f.properties.POP_EST,
+  id: f.properties.ISO_A3,
+  geometry: f.geometry,
+  formalName: f.FORMAL_EN,
+  immigrationData: countryFlags.find(countryFlag => countryFlag.id === f.properties.ISO_A3) //AFG
+})
+//.filter (x => x.immigrationData !== null)
+)
+.sort(
+  (a,b) => {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  }
+)*/
 
 export default Visualizer;
