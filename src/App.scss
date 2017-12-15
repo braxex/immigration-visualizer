@@ -1,6 +1,12 @@
 //Variable Declaration
 $background-color: #ffffff;
 
+path:hover {
+  stroke:black;
+  stroke-width:.25px;
+  fill-opacity: .90;
+}
+
 //General Styling
 .App {
   text-align: center;

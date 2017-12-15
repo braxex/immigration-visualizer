@@ -1,3 +1,4 @@
+import * as d3 from 'd3';
 
 export let genNotes = {
   'lprNote': 'Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.',
@@ -31,8 +32,14 @@ export function csvHandler (csvData,lprni) {
 }
 
 export function combinator () {
+}
 
+export function handleMouseover() {
+  console.log('mouseover occurred');
+}
 
+export function handleMouseout() {
+  console.log('mouseout occurred');
 }
 
 // the three buckets

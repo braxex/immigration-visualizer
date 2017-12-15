@@ -6,7 +6,7 @@ import * as d3geoproj from 'd3-geo-projection';
 import * as d3sc from 'd3-scale-chromatic';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
-import {csvHandler, combinator, genNotes} from './formulas.js';
+import {csvHandler, combinator, genNotes, handleMouseover, handleMouseout} from './formulas.js';
 
 //Variable Declarations
 let width = 0;
@@ -28,7 +28,7 @@ function initializeD3(worldMap) {
     .attr('width', width)
     //makes zoom possible
     .call(d3.zoom()
-      .scaleExtent([1,5])   //zoom bounds
+      .scaleExtent([1,12])   //zoom bounds
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
     }))
@@ -51,8 +51,20 @@ function initializeD3(worldMap) {
     //.datum(topojson.feature(worldMap,worldMap.objects.ne_110m_admin_0_countries.geometries)) //topo try^
     .enter()
     .append('path')
-    .attr('fill', function(d) {return color((d.properties.POP_EST/7383089462)*100)})
-    .attr('d',geoPath);
+    .attr('fill', function(d) {return color((d.properties.pop_est/7383089462)*100)})
+    .attr('stroke','#444444').attr('stroke-width','.1')
+    .attr('d',geoPath)
+
+    //for adding
+    .on('mouseover',handleMouseover)
+    .on('mouseout',handleMouseout)
+
+    //add title on mouseover (temporary)
+    .append('svg:title')
+    .attr('class',function(d) {return 'path ' +d.id})
+    .attr('transform',function(d) {return 'translate('+geoPath.centroid(d) +')'; })
+    .attr('dy','.35em')
+    .text(function(d) {return d.properties.name_long+": "+d.properties.pop_est.toLocaleString()})
 }
 
 class Visualizer extends Component {
@@ -77,8 +89,18 @@ class Visualizer extends Component {
   }
 
   componentDidMount() {
+    //mount old geojson file
+    d3.json('./dum_geo.json', (err,old) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('DUM_GEO: ',old);
+      }
+    })
+
+
     //mount initial map
-    d3.json('./dum_geo.json', (err,map) => {
+    d3.json('./5p_geo.json', (err,map) => {
     //d3.json('./dum_topo.json', (err,map) => {   //topo try^
       if (err) {
         console.log(err)
