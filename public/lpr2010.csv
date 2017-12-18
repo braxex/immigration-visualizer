@@ -156,8 +156,7 @@ WSM,Samoa,185,20,5,0,7,2,0,219,
 STP,Sao Tome and Principe,dw,dw,0,dw,0,0,0,10,
 SAU,Saudi Arabia,623,279,171,82,95,13,0,1263,
 SEN,Senegal,868,65,82,89,142,39,0,1285,
-SRB,Serbia,1278,110,178,449,190,8,0,2216,"Includes data for the former Serbia and Montenegro (dissolved in 2006), which accounted for less than 0.3% of global US immigration in this year. The included former country's data accounts for approximately 99% of the displayed Serbian data.
-"
+SRB,Serbia,1278,110,178,449,190,8,0,2216,"Includes data for the former Serbia and Montenegro (dissolved in 2006), which accounted for less than 0.3% of global US immigration in this year. The included former country's data accounts for approximately 99% of the displayed Serbian data."
 SLE,Sierra Leone,929,104,62,484,415,17,12,2011,
 SGP,Singapore,289,65,377,18,14,11,0,774,
 SVK,Slovakia,333,15,149,3,37,1,0,538,"Does not include data for Czechoslovakia (dissolved in 1993), which accounted for less than 0.1% of global US immigration in this year. See Czechia for inclusion of this data."
@@ -194,4 +193,4 @@ VEN,Venezuela,4323,550,2769,1314,415,38,0,9409,
 VNM,Vietnam,11091,18027,360,1032,0,122,0,30632,
 YEM,Yemen,2750,583,47,156,45,10,0,3591,
 ZMB,Zambia,385,21,84,97,30,11,0,628,
-,Zimbabwe,429,24,209,547,58,7,0,1274,
+ZWE,Zimbabwe,429,24,209,547,58,7,0,1274,
