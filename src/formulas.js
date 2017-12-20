@@ -1,5 +1,6 @@
 //import * as d3 from 'd3';
 import {color} from './Visualizer.js';
+import * as d3 from 'd3';
 
 let dataFlags;
 export let allCombined;
@@ -35,12 +36,25 @@ export function csvHandler(csvData, lprni) {
   }
 }
 
-export function handleMouseover() {
-  //console.log('mouseover occurred');
+
+export function handleMouseover(d, i) {     //BUG: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+  if (d.immigrationData === undefined) {
+    d3.select(this)
+      .append('svg:title')
+      .text('no immigration data for current year')
+  } else {
+    //title on hover (temporary)
+    /*d3.select(this)
+      .append('svg:title')
+      .attr('class',function() {return 'path '+d.id})
+      .attr('dy','.35em')
+      .text(newData.find(item => item.id === d.id).immigrationData.countryName+': '+newData.find(item => item.id === d.id).immigrationData.total.toLocaleString())*/
+    //see country data on mouseover
+    console.log(allCombined.find(item => item.id === d.id));
+  }
 }
 
 export function handleMouseout() {
-  //console.log('mouseout occurred');
 }
 
 export function combinator(world, dataset, flags) {
@@ -60,7 +74,7 @@ export function combinator(world, dataset, flags) {
     if (a.name > b.name) return 1;
     return 0;
   })
-  }
+}
 
   export function fillChoropleth(d) {
     if (d.immigrationData === undefined) {
@@ -82,18 +96,6 @@ export function combinator(world, dataset, flags) {
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       //for adding
-      .on('mouseover',handleMouseover)
-      .on('mouseout',handleMouseout)
-      //add title on mouseover (temporary)
-      .append('svg:title')
-      .attr('class',function(d) {return 'path ' +d.id})
-      .attr('dy','.35em')
-      .text(function(d) {
-        if (d.immigrationData === undefined) {
-          return "No immigration data for current year."
-        } else {
-          return d.name+": "+(d.immigrationData.total).toLocaleString()
-        }
-      }
-    )
+      .on('mouseover', handleMouseover)
+      .on('mouseout', handleMouseout);
   }

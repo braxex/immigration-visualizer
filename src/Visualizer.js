@@ -4,9 +4,10 @@ import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
 import * as d3sc from 'd3-scale-chromatic';
+//import * as d3sel from 'd3-selection';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
-import {csvHandler, combinator, allCombined, goFill} from './formulas.js';
+import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
 import {flags} from './flags.js';
 
 //Variable Declarations
@@ -14,6 +15,10 @@ let width = 0;
 let height = 0;
 let dataset = [{}];
 let worldMap;
+let svg;
+let g;
+let geoPath;
+let projection;
 export var color = d3.scaleLinear()
     .domain([-0.01,0,0.25,2.5,5,10,15,20])
     .range(d3sc.schemeGnBu[9].slice(1));
@@ -23,7 +28,7 @@ function initializeD3(worldMap) {
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth;
   height = reactContainer.offsetHeight;
-  let svg = d3.select('#d3-mount-point').append('svg')
+  svg = d3.select('#d3-mount-point').append('svg')
     .attr('height', height)
     .attr('width', width)
     //zoom functionality
@@ -34,15 +39,15 @@ function initializeD3(worldMap) {
     }))
     .append('g') //needed for zoom
 
-  var g = svg.append('g');
+  g = svg.append('g');
 
-  var projection = d3geoproj.geoCylindricalStereographic() //more options here: https://goo.gl/9AMQao
+  projection = d3geoproj.geoCylindricalStereographic() //more options here: https://goo.gl/9AMQao
     .scale(170)
     .rotate([-11,0])
     .center([0,22])
     .translate([width/2,height/2]);
 
-  var geoPath = d3.geoPath()
+  geoPath = d3.geoPath()
     .projection(projection);
 
   goFill(g,geoPath);
@@ -54,7 +59,7 @@ class Visualizer extends Component {
   }
 
   //re-runs each time some prop is changed
-  componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps,svg,g,geoPath) {
     console.log('State is: ', nextProps);
 
     /*loads new dataset and prepares for manipulation*/
@@ -66,6 +71,11 @@ class Visualizer extends Component {
         dataset = csvData;
         combinator(worldMap,dataset,flags);
         console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), allCombined);
+
+        //restyle choropleth paths
+        d3.select('#d3-mount-point').selectAll('path')
+          .data(allCombined)
+          .attr('fill', function(d) {return fillChoropleth(d)})
       }
     });
   }
