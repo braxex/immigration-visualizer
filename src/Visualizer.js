@@ -3,12 +3,12 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import * as d3sc from 'd3-scale-chromatic';
 //import * as d3sel from 'd3-selection';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
 import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
 import {flags} from './flags.js';
+
 
 //Variable Declarations
 let width = 0;
@@ -19,9 +19,6 @@ let svg;
 let g;
 let geoPath;
 let projection;
-export var color = d3.scaleLinear()
-    .domain([-0.01,0,0.25,2.5,5,10,15,20])
-    .range(d3sc.schemeGnBu[9].slice(1));
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
@@ -50,7 +47,7 @@ function initializeD3(worldMap) {
   geoPath = d3.geoPath()
     .projection(projection);
 
-  goFill(g,geoPath);
+  goFill(g,geoPath,'LPR');
 }
 
 class Visualizer extends Component {
@@ -61,7 +58,6 @@ class Visualizer extends Component {
   //re-runs each time some prop is changed
   componentWillReceiveProps(nextProps,svg,g,geoPath) {
     console.log('State is: ', nextProps);
-
     /*loads new dataset and prepares for manipulation*/
     d3.csv(("./"+nextProps.radioDataset+nextProps.dataYear+".csv"), function(err, csvData) {
       if (err) {
@@ -75,7 +71,7 @@ class Visualizer extends Component {
         //restyle choropleth paths
         d3.select('#d3-mount-point').selectAll('path')
           .data(allCombined)
-          .attr('fill', function(d) {return fillChoropleth(d)})
+          .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset)})
       }
     });
   }

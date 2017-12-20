@@ -1,6 +1,8 @@
 //import * as d3 from 'd3';
-import {color} from './Visualizer.js';
+import {} from './Visualizer.js';
 import * as d3 from 'd3';
+import * as d3sc from 'd3-scale-chromatic';
+
 
 let dataFlags;
 export let allCombined;
@@ -39,9 +41,7 @@ export function csvHandler(csvData, lprni) {
 
 export function handleMouseover(d, i) {     //BUG: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
   if (d.immigrationData === undefined) {
-    d3.select(this)
-      .append('svg:title')
-      .text('no immigration data for current year')
+    console.log('no immigration data for current year')
   } else {
     //title on hover (temporary)
     /*d3.select(this)
@@ -50,7 +50,8 @@ export function handleMouseover(d, i) {     //BUG: the first time a country is m
       .attr('dy','.35em')
       .text(newData.find(item => item.id === d.id).immigrationData.countryName+': '+newData.find(item => item.id === d.id).immigrationData.total.toLocaleString())*/
     //see country data on mouseover
-    console.log(allCombined.find(item => item.id === d.id));
+    var selCountry = allCombined.find(item => item.id === d.id).immigrationData;
+    console.log(selCountry.countryName+": "+selCountry.total.toLocaleString())
   }
 }
 
@@ -74,17 +75,35 @@ export function combinator(world, dataset, flags) {
     if (a.name > b.name) return 1;
     return 0;
   })
+  //var reducer = (accumulator, currentValue) => accumulator + currentValue;
+  //console.log(allCombinedreduce(reducer));
+  var arr1 = allCombined.map(x => x.immigrationData);
+  console.log(arr1);
+  //console.log('try',arr1.map(x => x.name));
+  console.log('ac',allCombined);
 }
 
-  export function fillChoropleth(d) {
+  export function fillChoropleth(d,rdState) {
     if (d.immigrationData === undefined) {
       return '#dddddd'
     } else {
-      return color((d.immigrationData.total/750000)*100)
+      if (rdState === 'LPR') {
+        let lprColor = d3.scaleQuantile()
+          .domain([-0.01,0,0.25,.5,1,2.5,5,10,15])
+          .range(d3sc.schemePuBu[9].slice(1));
+          return lprColor((d.immigrationData.total/750000)*100)
+      }
+        else if (rdState === 'NI') {
+          let niColor = d3.scaleQuantile()
+          //.domain([0,allCombined.immigrationData.total.reduce(function(a,b) => Math.max(a,b))])
+            .domain([-0.01,0,0.25,.5,1,2.5,5,10,15,25])
+            .range(d3sc.schemeGnBu[9].slice(1));
+      return niColor((d.immigrationData.total/15000000)*100)
+      }
     }
   }
 
-  export function goFill(g, geoPath) {
+  export function goFill(g, geoPath,rd) {
     g.selectAll('path')
     //g.append('path')  //topo try^
       .data(allCombined)
@@ -92,7 +111,7 @@ export function combinator(world, dataset, flags) {
       .enter()
       .append('path')
       //.attr('fill', function(d) {return color(fillChoropleth(d))})
-      .attr('fill', function(d) {return fillChoropleth(d)})
+      .attr('fill', function(d) {return fillChoropleth(d,rd)})
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       //for adding
