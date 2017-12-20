@@ -6,7 +6,7 @@ import * as d3geoproj from 'd3-geo-projection';
 import * as d3sc from 'd3-scale-chromatic';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
-import {csvHandler, combinator, handleMouseover, handleMouseout, allCombined} from './formulas.js';
+import {csvHandler, combinator, allCombined, goFill} from './formulas.js';
 import {flags} from './flags.js';
 
 //Variable Declarations
@@ -14,9 +14,9 @@ let width = 0;
 let height = 0;
 let dataset = [{}];
 let worldMap;
-var color = d3.scaleLinear()
+export var color = d3.scaleLinear()
     .domain([-0.01,0,0.25,2.5,5,10,15,20])
-    .range(d3sc.schemeOrRd[9].slice(1));
+    .range(d3sc.schemeGnBu[9].slice(1));
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
@@ -45,26 +45,7 @@ function initializeD3(worldMap) {
   var geoPath = d3.geoPath()
     .projection(projection);
 
-  g.selectAll('path')
-  //g.append('path')  //topo try^
-    .data(worldMap.features)
-    //.datum(topojson.feature(worldMap,worldMap.objects.ne_110m_admin_0_countries.geometries)) //topo try^
-    .enter()
-    .append('path')
-    .attr('fill', function(d) {return color((d.properties.pop_est/7383089462)*100)})
-    .attr('stroke','#333').attr('stroke-width','.015')
-    .attr('d',geoPath)
-
-    //for adding
-    .on('mouseover',handleMouseover)
-    .on('mouseout',handleMouseout)
-
-    //add title on mouseover (temporary)
-    .append('svg:title')
-    .attr('class',function(d) {return 'path ' +d.id})
-    .attr('transform',function(d) {return 'translate('+geoPath.centroid(d) +')'; })
-    .attr('dy','.35em')
-    .text(function(d) {return d.properties.name_long+": "+d.properties.pop_est.toLocaleString()})
+  goFill(g,geoPath);
 }
 
 class Visualizer extends Component {
