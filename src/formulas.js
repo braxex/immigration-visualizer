@@ -39,7 +39,7 @@ export function csvHandler(csvData, lprni) {
 }
 
 
-export function handleMouseover(d, i) {     //BUG: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+export function handleMouseover(d, i) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
   if (d.immigrationData === undefined) {
     console.log('no immigration data for current year')
   } else {
@@ -75,12 +75,12 @@ export function combinator(world, dataset, flags) {
     if (a.name > b.name) return 1;
     return 0;
   })
-  //var reducer = (accumulator, currentValue) => accumulator + currentValue;
-  //console.log(allCombinedreduce(reducer));
-  var arr1 = allCombined.map(x => x.immigrationData);
-  console.log(arr1);
-  //console.log('try',arr1.map(x => x.name));
-  console.log('ac',allCombined);
+  var sumTotal = allCombined.map(function(x) {
+    if (x.immigrationData=== undefined) {return undefined}
+    else {return x.immigrationData.total}})
+    .filter(x => x!== undefined)
+    .reduce((a,b) => a+b);
+  console.log(sumTotal)       //BUG2: because ISO_A3 codes are not unique, some country totals are double counted (ex. greenland) -- just use csvData or change ISO values back
 }
 
   export function fillChoropleth(d,rdState) {
@@ -90,14 +90,14 @@ export function combinator(world, dataset, flags) {
       if (rdState === 'LPR') {
         let lprColor = d3.scaleQuantile()
           .domain([-0.01,0,0.25,.5,1,2.5,5,10,15])
-          .range(d3sc.schemePuBu[9].slice(1));
+          .range(d3sc.schemePuBuGn[9].slice(1));
           return lprColor((d.immigrationData.total/750000)*100)
       }
         else if (rdState === 'NI') {
           let niColor = d3.scaleQuantile()
           //.domain([0,allCombined.immigrationData.total.reduce(function(a,b) => Math.max(a,b))])
             .domain([-0.01,0,0.25,.5,1,2.5,5,10,15,25])
-            .range(d3sc.schemeGnBu[9].slice(1));
+            .range(d3sc.schemeYlGnBu[9].slice(1));
       return niColor((d.immigrationData.total/15000000)*100)
       }
     }
