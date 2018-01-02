@@ -63,20 +63,28 @@ class App extends Component {
         {/*Radio Control Section*/}
         <div id="controller-box" className="controller-box">
           <div id="toggle-controls" className="toggle-controls">
-            <label title={titleNotes.lprMsg}>LPR
-              <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
-                defaultChecked={true}
-                onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
-            </label>
-            <label title={titleNotes.niMsg}>NI
-              <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
-                onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
-            </label>
+            <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
+              style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#666666'}}>
+              <label title={titleNotes.lprMsg}>LPR
+                <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
+                  defaultChecked={true}
+                  onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
+              </label>
+            </div>
+            <div id='ni-toggle-box' className='ni-toggle-box toggle-box'
+              style={{color: this.state.radioDataset==='NI' ? '#000000' : '#666666'}}>
+              <label title={titleNotes.niMsg}>NI
+                <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
+                  onChange={(event) =>
+                    this.changeRadioDataset(event.target.value)}></input>
+              </label>
+            </div>
           </div>
 
         {/*Checkbox Control Section*/}
           <div id="main-checkbox-div" className="main-checkbox-div">
-              <div className='checkbox-holder lpr-checkbox-div'>
+              <div className='checkbox-holder lpr-checkbox-div'
+                style={{display: this.state.radioDataset==='LPR' ? 'block' : 'none'}}>
                 {this.props.lprItems.map(function(item, index){
                   return <LPRCheckbox key={index}
                     checkboxItem={item}
@@ -84,7 +92,8 @@ class App extends Component {
                     changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
                 }, this)}
               </div>
-              <div className='checkbox-holder ni-checkbox-div'>
+              <div className='checkbox-holder ni-checkbox-div'
+                style={{display: this.state.radioDataset==='NI' ? 'block' : 'none'}}>
                 {this.props.niItems.map(function(item, index){
                   return <NICheckbox key={index}
                     checkboxItem={item}

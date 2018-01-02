@@ -166,10 +166,6 @@ path:hover {
   margin-right: 5px;
 }
 
-.checkbox-holder {
-  border: 1px solid black;
-}
-
 .checkbox-item-holder {
   display: inline-block;
 }
@@ -177,6 +173,42 @@ path:hover {
 [type=checkbox] {
   vertical-align: middle;
 }
+
+//Toggle Box Styling
+.lpr-toggle-box {
+  border: 1px solid black;
+  border-right: none;
+  border-radius: 5px 0px 0px 5px;
+  margin: 0px;
+}
+
+.ni-toggle-box {
+  border: 1px solid black;
+  border-radius: 0px 5px 5px 0px;
+  margin: 0px;
+}
+
+.toggle-box label > input[type=radio] {
+  display: none;
+}
+
+.toggle-box label {
+  text-align: center;
+  font-weight: bold;
+}
+
+.toggle-box label:hover {
+  color: #000000;
+}
+
+
+
+
+
+
+
+
+
 
 
 //Pre-Prod Information Visualizer Styling
