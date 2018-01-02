@@ -26,7 +26,7 @@ class App extends Component {
       initialState.LPR[item.name] = {checkedStatus: true};
     })
     this.props.niItems.forEach(function(item) {
-      initialState.NI[item.name] = {checkedStatus: false};
+      initialState.NI[item.name] = {checkedStatus: true};
     })
     this.state = initialState;
   }

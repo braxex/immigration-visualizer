@@ -152,6 +152,10 @@ path:hover {
   width: 525px;
   max-width: 95%;
   margin: auto;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .controller-box * {
@@ -195,6 +199,7 @@ path:hover {
 .toggle-box label {
   text-align: center;
   font-weight: bold;
+  cursor: pointer;
 }
 
 .toggle-box label:hover {

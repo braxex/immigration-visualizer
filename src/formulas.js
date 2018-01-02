@@ -3,7 +3,6 @@ import {} from './Visualizer.js';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 
-
 let dataFlags;
 export let allCombined;
 
@@ -83,27 +82,42 @@ export function combinator(world, dataset, flags) {
   console.log(sumTotal)       //BUG2: because ISO_A3 codes are not unique, some country totals are double counted (ex. greenland) -- just use csvData or change ISO values back
 }
 
-  export function fillChoropleth(d,rdState) {
+  export function parseNumberForTotal(value) {
+    if (Number.isNaN(value)) {
+      return 0;
+    }
+    else if (typeof value === 'string') {
+      const parsedNumber = parseInt(value,10)
+      return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
+    }
+    else if (typeof value === 'number') {
+      return value;
+    }
+    else return 0;
+  }
+
+  export function fillChoropleth(d,rdState,sumSelected) {
     if (d.immigrationData === undefined) {
       return '#dddddd'
     } else {
+      //console.log(d);
       if (rdState === 'LPR') {
         let lprColor = d3.scaleQuantile()
           .domain([-0.01,0,0.25,.5,1,2.5,5,10,15])
           .range(d3sc.schemePuBuGn[9].slice(1));
-          return lprColor((d.immigrationData.total/750000)*100)
+        return lprColor((d.immigrationData.selectedTotal/sumSelected)*100)
       }
         else if (rdState === 'NI') {
           let niColor = d3.scaleQuantile()
           //.domain([0,allCombined.immigrationData.total.reduce(function(a,b) => Math.max(a,b))])
             .domain([-0.01,0,0.25,.5,1,2.5,5,10,15,25])
             .range(d3sc.schemeYlGnBu[9].slice(1));
-      return niColor((d.immigrationData.total/15000000)*100)
+          return niColor((d.immigrationData.selectedTotal/sumSelected)*100)
       }
     }
   }
 
-  export function goFill(g, geoPath,rd) {
+  export function goFill(g, geoPath,rdState,subtotalKeys) {
     g.selectAll('path')
     //g.append('path')  //topo try^
       .data(allCombined)
@@ -111,7 +125,7 @@ export function combinator(world, dataset, flags) {
       .enter()
       .append('path')
       //.attr('fill', function(d) {return color(fillChoropleth(d))})
-      .attr('fill', function(d) {return fillChoropleth(d,rd)})
+      .attr('fill', function(d) {return fillChoropleth(d,rdState,subtotalKeys)})
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       //for adding

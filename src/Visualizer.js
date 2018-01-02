@@ -6,9 +6,8 @@ import * as d3geoproj from 'd3-geo-projection';
 //import * as d3sel from 'd3-selection';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
-import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
+import {csvHandler, combinator, allCombined, goFill, fillChoropleth, parseNumberForTotal} from './formulas.js';
 import {flags} from './flags.js';
-
 
 //Variable Declarations
 let width = 0;
@@ -19,6 +18,9 @@ let svg;
 let g;
 let geoPath;
 let projection;
+let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR'];
+let newCombined;
+let sumSelected;
 
 //Called when Visualizer renders
 function initializeD3(worldMap) {
@@ -47,7 +49,7 @@ function initializeD3(worldMap) {
   geoPath = d3.geoPath()
     .projection(projection);
 
-  goFill(g,geoPath,'LPR');
+  goFill(g,geoPath,'LPR',subtotalKeys);
 }
 
 class Visualizer extends Component {
@@ -68,10 +70,48 @@ class Visualizer extends Component {
         combinator(worldMap,dataset,flags);
         console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), allCombined);
 
+        newCombined = allCombined;
+        //determine which data to display (based on checkboxes)
+        function readData(data, nextProps) {
+          let subtotalKeys = Object.keys(nextProps[nextProps.radioDataset])
+            .filter(key => nextProps[nextProps.radioDataset][key].checkedStatus === true);
+          data.map(function(country) {
+            if (country.immigrationData !== undefined) {
+              let countedImmigrants = null;
+              if (subtotalKeys.length === 0) {
+                countedImmigrants = 0;
+              }
+              else if (subtotalKeys.length === 1) {
+                countedImmigrants = parseNumberForTotal(country.immigrationData[subtotalKeys[0]]);
+              }
+              else {
+                countedImmigrants = subtotalKeys.reduce(function(acc, subtotalKey) {
+                  return acc + parseNumberForTotal(country.immigrationData[subtotalKey]);
+                }, 0)
+              }
+              Object.assign(country.immigrationData, {selectedTotal:countedImmigrants});
+            }
+          })
+        }
+        readData(newCombined, nextProps);
+
+        function calcSelectedTotal(data) {
+          sumSelected = data.reduce(function(acc, country) {
+            if (country.immigrationData !== undefined) {
+              return acc + parseInt(country.immigrationData.selectedTotal,10);
+            }
+            else {
+              return acc + 0;
+            }
+          }, 0)
+        }
+        calcSelectedTotal(newCombined);
+
+        console.log('SEL CHECK',sumSelected);
         //restyle choropleth paths
         d3.select('#d3-mount-point').selectAll('path')
-          .data(allCombined)
-          .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset)})
+          .data(newCombined)
+          .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
       }
     });
   }
