@@ -21,7 +21,7 @@ export function csvHandler(csvData, lprni) {
       d.refugeeAsylee = +d.refugeeAsylee;
       d.diversityLottery = +d.diversityLottery;
       d.adoptedOrphans = +d.adoptedOrphans;
-      d.other = +d.other;
+      d.otherLPR = +d.otherLPR;
       d.total = +d.total;
     });
   }
@@ -31,7 +31,7 @@ export function csvHandler(csvData, lprni) {
       d.studentExchange = +d.studentExchange;
       d.temporaryWorker = +d.temporaryWorker;
       d.diplomatRep = +d.diplomatRep;
-      d.other = +d.other;
+      d.otherNI = +d.otherNI;
       d.total = +d.total;
     });
   }

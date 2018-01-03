@@ -172,7 +172,7 @@ function calcSelectedTotal(data) {
       return acc + parseInt(country.immigrationData.selectedTotal,10);
     }
     else {
-      return acc + 0;
+      return acc;
     }
   }, 0)
 }
