@@ -50,7 +50,7 @@ export function handleMouseover(d, i) {     //BUG1: the first time a country is 
       .text(newData.find(item => item.id === d.id).immigrationData.countryName+': '+newData.find(item => item.id === d.id).immigrationData.total.toLocaleString())*/
     //see country data on mouseover
     var selCountry = allCombined.find(item => item.id === d.id).immigrationData;
-    console.log(selCountry.countryName+": "+selCountry.total.toLocaleString())
+    console.log(selCountry.countryName+": "+selCountry.selectedTotal.toLocaleString())
   }
 }
 
@@ -117,7 +117,7 @@ export function combinator(world, dataset, flags) {
     }
   }
 
-  export function goFill(g, geoPath,rdState,subtotalKeys) {
+  export function goFill(g, geoPath,rdState,sumSelected) {
     g.selectAll('path')
     //g.append('path')  //topo try^
       .data(allCombined)
@@ -125,7 +125,7 @@ export function combinator(world, dataset, flags) {
       .enter()
       .append('path')
       //.attr('fill', function(d) {return color(fillChoropleth(d))})
-      .attr('fill', function(d) {return fillChoropleth(d,rdState,subtotalKeys)})
+      .attr('fill', function(d) {return fillChoropleth(d,rdState,sumSelected)})
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       //for adding
