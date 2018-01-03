@@ -74,27 +74,7 @@ export function combinator(world, dataset, flags) {
     if (a.name > b.name) return 1;
     return 0;
   })
-  var sumTotal = allCombined.map(function(x) {
-    if (x.immigrationData=== undefined) {return undefined}
-    else {return x.immigrationData.total}})
-    .filter(x => x!== undefined)
-    .reduce((a,b) => a+b);
-  console.log(sumTotal)       //BUG2: because ISO_A3 codes are not unique, some country totals are double counted (ex. greenland) -- just use csvData or change ISO values back
 }
-
-  export function parseNumberForTotal(value) {
-    if (Number.isNaN(value)) {
-      return 0;
-    }
-    else if (typeof value === 'string') {
-      const parsedNumber = parseInt(value,10)
-      return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
-    }
-    else if (typeof value === 'number') {
-      return value;
-    }
-    else return 0;
-  }
 
   export function fillChoropleth(d,rdState,sumSelected) {
     if (d.immigrationData === undefined) {
@@ -103,14 +83,14 @@ export function combinator(world, dataset, flags) {
       //console.log(d);
       if (rdState === 'LPR') {
         let lprColor = d3.scaleQuantile()
-          .domain([-0.01,0,0.25,.5,1,2.5,5,10,15])
+          .domain([-0.01,0,0.125,0.25,.5,1,2.5,5,10,15])
           .range(d3sc.schemePuBuGn[9].slice(1));
         return lprColor((d.immigrationData.selectedTotal/sumSelected)*100)
       }
         else if (rdState === 'NI') {
           let niColor = d3.scaleQuantile()
           //.domain([0,allCombined.immigrationData.total.reduce(function(a,b) => Math.max(a,b))])
-            .domain([-0.01,0,0.25,.5,1,2.5,5,10,15,25])
+            .domain([-0.01,0,0.025,0.25,.5,1,2.5,5,10,15,25])
             .range(d3sc.schemeYlGnBu[9].slice(1));
           return niColor((d.immigrationData.selectedTotal/sumSelected)*100)
       }

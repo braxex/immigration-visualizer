@@ -6,7 +6,7 @@ import * as d3geoproj from 'd3-geo-projection';
 //import * as d3sel from 'd3-selection';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
-import {csvHandler, combinator, allCombined, goFill, fillChoropleth, parseNumberForTotal} from './formulas.js';
+import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
 import {flags} from './flags.js';
 
 //Variable Declarations
@@ -110,7 +110,7 @@ class Visualizer extends Component {
             //determine which data to display (based on checkboxes)
             readData(newCombined);
             calcSelectedTotal(newCombined);
-            console.log('SEL CHECK',sumSelected);
+            console.log('SUMSEL:',sumSelected);
 
             initializeD3(worldMap,sumSelected);
           }
@@ -150,6 +150,20 @@ function readData(data) {
     }
     return 0;
   })
+}
+
+function parseNumberForTotal(value) {
+  if (Number.isNaN(value)) {
+    return 0;
+  }
+  else if (typeof value === 'string') {
+    const parsedNumber = parseInt(value,10)
+    return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
+  }
+  else if (typeof value === 'number') {
+    return value;
+  }
+  else return 0;
 }
 
 function calcSelectedTotal(data) {
