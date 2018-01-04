@@ -50,8 +50,8 @@ class App extends Component {
         <div id="slider-box" className="slider-box">
           <div>
             <i className={`fa fa-${this.state.isPlaying ? 'pause' : 'play'}-circle-o fa-2x`}
-              aria-hidden="true" onClick={() => this.toggleIsPlaying(this.state.isPlaying)}></i>
-            <input type="range" className="slider"
+              aria-hidden="true" onClick={() => this.toggleIsPlaying(this.state.isPlaying,this.state.dataYear)}></i>
+            <input type="range" className="slider" ref="slider"
               min={this.props.yearBounds[0]}
               max={this.props.yearBounds[1]}
               onChange={(event) => this.changeDataYear(event.target.value)}
@@ -144,11 +144,22 @@ class App extends Component {
     })
   }
 
-  toggleIsPlaying(playState) {
+  toggleIsPlaying(playState,currYear) {     //BUG3 & BUG4
+    console.log('play status',this.state.isPlaying);
     this.setState.bind(this)({
-      isPlaying: !playState
-    })
-  }
+      isPlaying: !playState,
+    });
+      if (currYear < 2015) {
+        this.setState({
+          dataYear: this.state.dataYear +1
+        })
+      }
+      else {
+        this.setState({
+          dataYear: 2005
+        })
+      }
+    }
 }
 
 class LPRCheckbox extends Component {

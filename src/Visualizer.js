@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
+//import * as d3sc from 'd3-scale-chromatic';
 //import * as d3sel from 'd3-selection';
 //import * as d3geo from 'd3-geo';
 //import * as topojson from 'topojson-client';
@@ -48,6 +49,58 @@ function initializeD3(worldMap, sumSelected) {
 
   geoPath = d3.geoPath()
     .projection(projection);
+
+  //Second Legend Attempt
+  /*var quant = d3.scaleQuantile()
+    .domain([-0.01,0,0.125,0.25,.5,1,2.5,5,10,15])
+    .range(d3sc.schemePuBuGn[9].slice(1));
+
+  var formatPercent = d3.format('.0%');
+  var formatNumber = d3.format('.0f');
+  var x = d3.scaleLinear().domain([0,1]).range([0,100]);
+  var xAxis = d3.axisBottom(x)
+    .tickSize(13)
+    .tickValues(quant.domain())
+    .tickFormat(function(d) { return d === 0.5 ? formatPercent(d) : formatNumber(100*d);});
+
+var h = d3.select('g').call(xAxis);
+var dsubz;
+var dsubo;
+
+h.select('.domain').remove();
+h.selectAll('rect')
+  .data(quant.range().map(function(color) {
+    var d = quant.invertExtent(color);
+    if (d[0] == null) dsubz = x.domain()[0];
+    if (d[1] == null) dsubo = x.domain()[1];
+  }))
+  .enter().insert('rect','.tick')
+    .attr('height',8)
+    .attr('x',function(d) { return x(dsubz); })
+    .attr('width', function(d) { return x(dsubo) - x(dsubz); })
+    .attr('fill', function(d) { return quant(dsubz); })
+
+  h.append('text')
+    .attr('font-weight','bold')
+    .attr('text-anchor','start')
+    .attr('y',-6)
+    .text('Did this work');*/
+
+  //First Legend Attempt
+  /*var legend = d3.select('body').append('svg')
+      .attr('class','legend')
+      .attr('width',500)
+      .attr('height',200)
+      .attr('transform','translate(900,-300)')
+    .selectAll('g')
+      .data(color.domain().slice().reverse())
+    .enter().append('g')
+      .attr('transform',function(d,i) { return 'translate(400,' +i*20 + ')';});
+
+  legend.append('rect')
+    .attr('width',30)
+    .attr('height',50)
+    .style('fill',color);*/
 
   goFill(g,geoPath,'LPR',sumSelected);
 }
@@ -166,7 +219,7 @@ function parseNumberForTotal(value) {
   else return 0;
 }
 
-function calcSelectedTotal(data) {
+function calcSelectedTotal(data) {  //BUG2
   sumSelected = data.reduce(function(acc, country) {
     if (country.immigrationData !== undefined) {
       return acc + parseInt(country.immigrationData.selectedTotal,10);
