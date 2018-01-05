@@ -5,6 +5,9 @@ import * as d3sc from 'd3-scale-chromatic';
 
 let dataFlags;
 export let allCombined;
+export let lprScale;
+export let niScale;
+let immSum;
 
 export let genNotes = {
   'lprNote': 'Immigrant data not shown for those with unknown country of birth and for countries where total immigrant population in a given year was less than 10.',
@@ -38,7 +41,7 @@ export function csvHandler(csvData, lprni) {
 }
 
 
-export function handleMouseover(d, i) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+export function handleMouseover(d, i, sumSelected) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
   if (d.immigrationData === undefined) {
     console.log('no immigration data for current year')
   } else {
@@ -50,7 +53,7 @@ export function handleMouseover(d, i) {     //BUG1: the first time a country is 
       .text(newData.find(item => item.id === d.id).immigrationData.countryName+': '+newData.find(item => item.id === d.id).immigrationData.total.toLocaleString())*/
     //see country data on mouseover
     var selCountry = allCombined.find(item => item.id === d.id).immigrationData;
-    console.log(selCountry.countryName+": "+selCountry.selectedTotal.toLocaleString())
+    console.log(selCountry.countryName+": "+(selCountry.selectedTotal).toLocaleString()+' people; '+(Math.round((((selCountry.selectedTotal)/immSum)*100)*100)/100).toLocaleString()+'%');
   }
 }
 
@@ -77,22 +80,23 @@ export function combinator(world, dataset, flags) {
 }
 
   export function fillChoropleth(d,rdState,sumSelected) {
+    immSum = sumSelected;
     if (d.immigrationData === undefined) {
       return '#dddddd'
     } else {
       //console.log(d);
       if (rdState === 'LPR') {
-        let lprColor = d3.scaleQuantile()
-          .domain([-0.01,0,0.125,0.25,.5,1,2.5,5,10,15])
+        //.domain([0,0.01,0.025,0.25,.5,1,2.5,5,10,15,25])  //old quantile values for both
+        lprScale = d3.scaleThreshold()
+          .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
           .range(d3sc.schemePuBuGn[9].slice(1));
-        return lprColor((d.immigrationData.selectedTotal/sumSelected)*100)
+        return lprScale((d.immigrationData.selectedTotal/sumSelected)*100)
       }
         else if (rdState === 'NI') {
-          let niColor = d3.scaleQuantile()
-          //.domain([0,allCombined.immigrationData.total.reduce(function(a,b) => Math.max(a,b))])
-            .domain([-0.01,0,0.025,0.25,.5,1,2.5,5,10,15,25])
+          niScale = d3.scaleThreshold()
+            .domain([0.01,0.1,0.25,.5,1,2.5,5])
             .range(d3sc.schemeYlGnBu[9].slice(1));
-          return niColor((d.immigrationData.selectedTotal/sumSelected)*100)
+          return niScale((d.immigrationData.selectedTotal/sumSelected)*100)
       }
     }
   }

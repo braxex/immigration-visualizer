@@ -3,6 +3,7 @@ import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
+import Legend from './Legend.js';
 
 let titleNotes = {
   lprMsg: "Lawful permanent residents (LPRs) are non-US citizens who are lawfully authorized to live permanently within the United States. LPRs are often referred to simply as “immigrants”, but are also known as “permanent resident aliens” or “green card holders”. LPRs may accept an offer of employment without special restrictions, own property, receive financial assistance at public colleges and universities, and join the Armed Forces. They may also apply to become US citizens if they meet certain eligibility requirements. LPRs do not include those foreign nationals granted temporary admission to the US, such as temporary workers (including H1B visa holders), students/exchange visitors, diplomats, tourists, or those traveling for business. For more information, visit https://goo.gl/dN78yY.",
@@ -43,6 +44,9 @@ class App extends Component {
         {/*D3 Visualization Section*/}
         <div id="D3-holder" className="D3-holder">
           <Visualizer {...this.state}/>
+        </div>
+        <div id="legend-holder" className="legend-holder">
+          <Legend {...this.state}/>
         </div>
         <div id="year-display" className="year-display">Data: US Department of Homeland Security, {this.state.dataYear}</div>
 
