@@ -26,18 +26,19 @@ let sumSelected;
 //Called when Visualizer renders
 function initializeD3(worldMap, sumSelected) {
   const reactContainer = document.getElementById('D3-holder');
-  width = reactContainer.offsetWidth;
+  width = reactContainer.offsetWidth-2;
   height = reactContainer.offsetHeight;
   svg = d3.select('#d3-mount-point').append('svg')
+    .attr('id', 'immigration-svg')
     .attr('height', height)
+    .attr('max-height','90%')
     .attr('width', width)
     //zoom functionality
     .call(d3.zoom()
       .scaleExtent([1,12])   //zoom bounds
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
-    }))
-    .append('g') //needed for zoom
+    })).append('g'); //needed for zoom
 
   g = svg.append('g');
 
@@ -52,6 +53,11 @@ function initializeD3(worldMap, sumSelected) {
 
   goFill(g,geoPath,'LPR',sumSelected);
 }
+
+window.addEventListener('resize',function() {
+  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-2);
+  d3.select('#immigration-svg').attr('height', document.getElementById('D3-holder').offsetHeight-2);
+})
 
 class Visualizer extends Component {
   shouldComponentUpdate() {
@@ -105,14 +111,12 @@ class Visualizer extends Component {
             dataset = csvData;
             worldMap = map;
             combinator(worldMap,dataset,flags);
-            console.log(('DATASET IS LPR2005'), allCombined);
+            //console.log(('DATASET IS LPR2005'), allCombined);
 
             newCombined = allCombined;
             //determine which data to display (based on checkboxes)
             readData(newCombined);
             calcSelectedTotal(newCombined);
-            console.log('SUMSEL:',sumSelected);
-
             initializeD3(worldMap,sumSelected);
           }
         });
@@ -133,7 +137,7 @@ function getSubtotalKeys(nextProps) {
 }
 
 function readData(data) {
-  data.map(function(country) {
+  data.forEach(function(country) {
     if (country.immigrationData !== undefined) {
       let countedImmigrants = null;
       if (subtotalKeys.length === 0) {
@@ -149,7 +153,6 @@ function readData(data) {
       }
       Object.assign(country.immigrationData, {selectedTotal:countedImmigrants});
     }
-    return 0;
   })
 }
 
@@ -167,7 +170,7 @@ function parseNumberForTotal(value) {
   else return 0;
 }
 
-function calcSelectedTotal(data) {  //BUG2
+function calcSelectedTotal(data) {
   sumSelected = data.reduce(function(acc, country) {
     if (country.immigrationData !== undefined) {
       return acc + parseInt(country.immigrationData.selectedTotal,10);
