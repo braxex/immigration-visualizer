@@ -41,23 +41,23 @@ export function csvHandler(csvData, lprni) {
 }
 
 
-export function handleMouseover(d, i, sumSelected) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+  saveState({hoverCountry: {
+    id: d.id,
+    x: countryDOM.getBoundingClientRect().x,
+    y: countryDOM.getBoundingClientRect().y,
+  }});
   if (d.immigrationData === undefined) {
     console.log('no immigration data for current year')
   } else {
-    //title on hover (temporary)
-    /*d3.select(this)
-      .append('svg:title')
-      .attr('class',function() {return 'path '+d.id})
-      .attr('dy','.35em')
-      .text(newData.find(item => item.id === d.id).immigrationData.countryName+': '+newData.find(item => item.id === d.id).immigrationData.total.toLocaleString())*/
     //see country data on mouseover
     var selCountry = allCombined.find(item => item.id === d.id).immigrationData;
     console.log(selCountry.countryName+": "+(selCountry.selectedTotal).toLocaleString()+' people; '+(Math.round((((selCountry.selectedTotal)/immSum)*100)*100)/100).toLocaleString()+'%');
   }
 }
 
-export function handleMouseout() {
+export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
+  saveState({hoverCountry: null});
 }
 
 export function combinator(world, dataset, flags) {
@@ -101,7 +101,7 @@ export function combinator(world, dataset, flags) {
     }
   }
 
-  export function goFill(g, geoPath,rdState,sumSelected) {
+  export function goFill(g, geoPath,rdState,sumSelected,saveState) {
     g.selectAll('path')
     //g.append('path')  //topo try^
       .data(allCombined)
@@ -113,6 +113,6 @@ export function combinator(world, dataset, flags) {
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       //for adding
-      .on('mouseover', handleMouseover)
-      .on('mouseout', handleMouseout);
+      .on('mouseover', function(d, i, sumSelected) {handleMouseover(d, i, sumSelected, saveState, this)})
+      .on('mouseout', function(d, i, sumSelected) {handleMouseout(d, i, sumSelected, saveState, this)})
   }

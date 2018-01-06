@@ -3,10 +3,6 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-//import * as d3sc from 'd3-scale-chromatic';
-//import * as d3sel from 'd3-selection';
-//import * as d3geo from 'd3-geo';
-//import * as topojson from 'topojson-client';
 import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
 import {flags} from './flags.js';
 
@@ -24,7 +20,7 @@ let newCombined;
 let sumSelected;
 
 //Called when Visualizer renders
-function initializeD3(worldMap, sumSelected) {
+function initializeD3(worldMap, sumSelected, saveAppState) {
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth-2;
   height = reactContainer.offsetHeight;
@@ -51,7 +47,7 @@ function initializeD3(worldMap, sumSelected) {
   geoPath = d3.geoPath()
     .projection(projection);
 
-  goFill(g,geoPath,'LPR',sumSelected);
+  goFill(g,geoPath,'LPR',sumSelected,saveAppState);
 }
 
 window.addEventListener('resize',function() {
@@ -94,6 +90,7 @@ class Visualizer extends Component {
   }
 
   componentDidMount() {
+    const self = this;
     //mount initial map
     d3.json('./10m-s5p-pres_geo.json', (err,map) => {
     //d3.json('./dum_topo.json', (err,map) => {   //topo try^
@@ -117,7 +114,7 @@ class Visualizer extends Component {
             //determine which data to display (based on checkboxes)
             readData(newCombined);
             calcSelectedTotal(newCombined);
-            initializeD3(worldMap,sumSelected);
+            initializeD3(worldMap,sumSelected,self.props.saveAppState);
           }
         });
       }

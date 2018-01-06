@@ -3,6 +3,7 @@ import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
+import Card from './Card.js';
 import Legend from './Legend.js';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
@@ -23,7 +24,8 @@ class App extends Component {
       NI: {},
       radioDataset: 'LPR',
       dataYear: this.props.yearBounds[0],
-      isPlaying: false
+      isPlaying: false,
+      hoverCountry: null
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: true};
@@ -47,8 +49,10 @@ class App extends Component {
 
         {/*D3 Visualization Section*/}
         <div id="D3-holder" className="D3-holder">
-          <Visualizer {...this.state}/>
+          <Visualizer {...this.state} saveAppState={this.setState.bind(this)}/>
         </div>
+        {this.state.hoverCountry && <Card {...this.state.hoverCountry}/>}
+
         <div id="legend-holder" className="legend-holder">
           <Legend colors={colors} thresholds={thresholds}/>
         </div>
@@ -210,6 +214,13 @@ let niScale = d3.scaleThreshold()
                 .domain([0.01,0.1,0.25,.5,1,2.5,5])
                 .range(d3sc.schemeYlGnBu[9].slice(1));
 
+/*const datums = {}
+yearBounds = [2005,2015];
+for (let i=yearBounds[0]; i <= yearBounds[1]; i = i + 1) {
+  datums['lpr' + i] = makeMyData(i, 'lpr');
+  datums['ni' + i] = makeMyData(i, 'ni');
+} // add in each*/
+
 App.defaultProps = {
   lprItems: [
     {
@@ -277,7 +288,8 @@ App.defaultProps = {
   lprThresholds: lprScale.domain(),
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
-  niColors: niScale.range()
+  niColors: niScale.range(),
+  //...datums
 }
 
 /*  return (
