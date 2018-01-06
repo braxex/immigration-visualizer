@@ -4,6 +4,8 @@ import 'font-awesome/css/font-awesome.min.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
 import Legend from './Legend.js';
+import * as d3 from 'd3';
+import * as d3sc from 'd3-scale-chromatic';
 
 let titleNotes = {
   lprMsg: "Lawful permanent residents (LPRs) are non-US citizens who are lawfully authorized to live permanently within the United States. LPRs are often referred to simply as “immigrants”, but are also known as “permanent resident aliens” or “green card holders”. LPRs may accept an offer of employment without special restrictions, own property, receive financial assistance at public colleges and universities, and join the Armed Forces. They may also apply to become US citizens if they meet certain eligibility requirements. LPRs do not include those foreign nationals granted temporary admission to the US, such as temporary workers (including H1B visa holders), students/exchange visitors, diplomats, tourists, or those traveling for business. For more information, visit https://goo.gl/dN78yY.",
@@ -33,6 +35,8 @@ class App extends Component {
   }
 
   render() {
+    let colors = (this.state.radioDataset === 'LPR') ? this.props.lprColors : this.props.niColors;
+    let thresholds = (this.state.radioDataset === 'LPR') ? this.props.lprThresholds : this.props.niThresholds;
     return (
       <div className="App">
 
@@ -46,7 +50,7 @@ class App extends Component {
           <Visualizer {...this.state}/>
         </div>
         <div id="legend-holder" className="legend-holder">
-          <Legend {...this.state}/>
+          <Legend colors={colors} thresholds={thresholds}/>
         </div>
         <div id="year-display" className="year-display">Data: US Department of Homeland Security, {this.state.dataYear}</div>
 
@@ -55,10 +59,10 @@ class App extends Component {
           <div>
             <i className={`fa fa-${this.state.isPlaying ? 'pause' : 'play'}-circle-o fa-2x`}
               aria-hidden="true" onClick={() => this.toggleIsPlaying(this.state.isPlaying,this.state.dataYear)}></i>
-            <input type="range" className="slider" ref="slider"
+            <input type="range" className="slider"
               min={this.props.yearBounds[0]}
               max={this.props.yearBounds[1]}
-              onChange={(event) => this.changeDataYear(event.target.value)}
+              onChange={(event) => this.changeDataYear(parseInt(event.target.value,10))}
               value={this.state.dataYear}>
             </input>
           </div>
@@ -116,7 +120,7 @@ class App extends Component {
     );
   }
 
-  changeDataYear(sliderValue,playing) {
+  changeDataYear(sliderValue) {
     this.setState.bind(this)({
       dataYear: sliderValue,
       isPlaying: false
@@ -198,6 +202,14 @@ class NICheckbox extends Component {
   }
 }
 
+let lprScale = d3.scaleThreshold()
+                .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
+                .range(d3sc.schemePuBuGn[9].slice(1));
+
+let niScale = d3.scaleThreshold()
+                .domain([0.01,0.1,0.25,.5,1,2.5,5])
+                .range(d3sc.schemeYlGnBu[9].slice(1));
+
 App.defaultProps = {
   lprItems: [
     {
@@ -261,7 +273,11 @@ App.defaultProps = {
   yearBounds: [
     2005,
     2015
-  ]
+  ],
+  lprThresholds: lprScale.domain(),
+  lprColors: lprScale.range(),
+  niThresholds: niScale.domain(),
+  niColors: niScale.range()
 }
 
 /*  return (
