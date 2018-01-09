@@ -40,8 +40,7 @@ export function csvHandler(csvData, lprni) {
   }
 }
 
-
-export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {     //BUG1: the first time a country is moused over, it displays the correct data, but then after that it will display that same data no matter which state it changes to. each country does this and behavior independent
+export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {
   saveState({hoverCountry: {
     id: d.id,
     x: countryDOM.getBoundingClientRect().x,

@@ -1,15 +1,24 @@
 .legend {
+  max-width: 250px;
+  margin: -50px 5px 20px auto;
+}
 
+.legend-title {
+  font-weight: bold;
+}
+
+.legend-title, .legend-number {
+  font-size: .75em;
 }
 
 .legend-section {
   position: relative;
-  width: 50px;
+  width: 30px;
   height: 10px;
   display: inline-block;
 }
 
 .legend-number {
   position: absolute;
-  top: 10px;
+  top: 12px;
 }

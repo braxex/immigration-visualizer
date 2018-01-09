@@ -39,7 +39,7 @@ function initializeD3(worldMap, sumSelected, saveAppState) {
   g = svg.append('g');
 
   projection = d3geoproj.geoCylindricalStereographic() //more options here: https://goo.gl/9AMQao
-    .scale(170)
+    .scale(165)
     .rotate([-11,0])
     .center([0,22])
     .translate([width/2,height/2]);
