@@ -13,7 +13,7 @@ class Legend extends Component {
     const self = this;
     return (
       <div className='legend'>
-        <div className='legend-title'>% of Annual Activity</div>
+        <div className='legend-title'>% of Annual Total</div>
         <div>
           {this.props.colors.map(function(item, index){
             return <div key={index} className='legend-section' style={{backgroundColor: item}}>

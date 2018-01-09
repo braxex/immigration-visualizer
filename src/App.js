@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
 import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
+import 'react-tippy/dist/tippy.css';
 import {merge} from 'lodash';
 import Visualizer from './Visualizer.js';
 import Card from './Card.js';
 import Legend from './Legend.js';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
+import { Tooltip } from 'react-tippy';
 
-let titleNotes = {
-  lprMsg: "Lawful permanent residents (LPRs) are non-US citizens who are lawfully authorized to live permanently within the United States. LPRs are often referred to simply as “immigrants”, but are also known as “permanent resident aliens” or “green card holders”. LPRs may accept an offer of employment without special restrictions, own property, receive financial assistance at public colleges and universities, and join the Armed Forces. They may also apply to become US citizens if they meet certain eligibility requirements. LPRs do not include those foreign nationals granted temporary admission to the US, such as temporary workers (including H1B visa holders), students/exchange visitors, diplomats, tourists, or those traveling for business. For more information, visit https://goo.gl/dN78yY.",
-  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the United States. The major purposes for which nonimmigrant admission may be authorized include temporary visits for business or pleasure, academic or vocational study, temporary employment, or to act as a representative of a foreign government or international organization, among others. Unlike people granted LPR, or “green card” status, who may live in the United States essentially free of restrictions, nonimmigrants are authorized to enter the country for specific purposes. Nonimmigrant’s duration of stay and lawful activities, such as employment, travel, and accompaniment by dependents, are prescribed by their class of admission. For more information visit https://goo.gl/LJLYzc."
-}
-
+let titleNotes;
 class App extends Component {
 
   constructor(props) {
@@ -77,7 +75,10 @@ class App extends Component {
           <div id="toggle-controls" className="toggle-controls">
             <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#666666'}}>
-              <label title={titleNotes.lprMsg}>LPR
+              <label>
+                <Tooltip title={titleNotes.lprMsg} size='small' position='left-start' trigger='mouseenter'
+                  animation='shift' interactive='true' hideOnClick={true}>LPR
+                </Tooltip>
                 <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
                   defaultChecked={true}
                   onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
@@ -85,7 +86,10 @@ class App extends Component {
             </div>
             <div id='ni-toggle-box' className='ni-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='NI' ? '#000000' : '#666666'}}>
-              <label title={titleNotes.niMsg}>NI
+              <label>
+                <Tooltip title={titleNotes.niMsg} size='small' position='right-start' trigger='mouseenter'
+                  animation='shift' interactive='true' hideOnClick={true}>NI
+                </Tooltip>
                 <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
                   onChange={(event) =>
                     this.changeRadioDataset(event.target.value)}></input>
@@ -180,11 +184,16 @@ class LPRCheckbox extends Component {
     const {name, label, title} = checkboxItem;
     return (
       <div className="checkbox-item-holder">
-        <input className="checkbox" type="checkbox" checked={itemChecked}
-               onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
-               id={name}>
-        </input>
-        <label title={title} className="checkbox-label" htmlFor={name}>{label}</label>
+        <label>
+          <input className="checkbox" type="checkbox" checked={itemChecked}
+            onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
+            id={name}>
+          </input>
+          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
+            animation='shift' interactive='true' hideOnClick={true}>
+            {label}
+          </Tooltip>
+        </label>
       </div>
     )
   }
@@ -196,11 +205,16 @@ class NICheckbox extends Component {
     const {name, label, title} = checkboxItem;
     return (
       <span>
-        <input type="checkbox" checked={itemChecked}
-               onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
-               id={name}>
-        </input>
-        <label title={title} className="checkbox-label" htmlFor={name}>{label}</label>
+        <label>
+          <input type="checkbox" checked={itemChecked}
+            onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
+            id={name}>
+          </input>
+          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
+            animation='shift' interactive='true' hideOnClick={true}>
+            {label}
+          </Tooltip>
+        </label>
       </span>
     )
   }
@@ -226,59 +240,59 @@ App.defaultProps = {
     {
       name: "immediateRelative",
       label: "Immediate Relative",
-      title: "Immediate Relatives of US Citizens. Accounted for ≈44% of LPRs in 2015. Includes spouses, parents, and minor children (including those being adopted)."
+      title: "Spouses, parents, and minor children (including those being adopted) of US citizens. Accounts for ≈44.3% of LPRs annually."
     },
     {
       name: "familySponsored",
       label: "Family-Sponsored",
-      title: "Family-Sponsored Preferences. Accounted for ≈20% of LPRs in 2015. Includes unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (includes spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children))."
+      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)). Accounts for ≈20.1% of LPRs annually."
     },
     {
       name: "refugeeAsylee",
       label: "Refugee & Asylee",
-      title: "Refugees and Asylees. Accounted for ≈14% of LPRs in 2015. Includes those who have been persected or fear they will be persecuted on the bsis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives."
+      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives. Accounts for ≈14.9% of LPRs annually."
     },
     {
       name: "employmentBased",
       label: "Employment-Based",
-      title: "Employment-Based Preferences. Accounted for ≈14% of LPRs in 2015. Includes those who emigrate for employement (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children."
+      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children. Accounts for ≈14.3% of LPRs annually."
     },
     {
       name: "diversityLottery",
       label: "Diversity Lottery",
-      title: "Diversity Visa Lottery. Accounted for ≈5% of LPRs in 2015. Includes those who seek to immigrate to the US from countries with relatively low levels of immigration (under the Diversity Immigration Visa Program)."
+      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program. Accounts for ≈4.3% of LPRs annually."
     },
     {
       name: "otherLPR",
       label: "Other",
-      title: "Other. Accounted for ≈3% of LPRs in 2015. Includes others who qualify as a result of other special legislation allowing classes of individuals from certain countries and in certain situations."
+      title: "Others who qualify as a result of other special legislation extending NI status to classes of individuals from certain countries and in certain situations. Accounts for ≈2.1% of LPRs annually."
     }
   ],
   niItems: [
     {
       name: "temporaryVisitor",
       label: "Temporary Visitor",
-      title: "Temporary Visitors for Business or Pleasure (Tourists). Accounted for ≈90% of NIs in 2015. Includes those visiting the US for pleasure (tourism, vacation, visting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions)."
+      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions). Accounts for ≈88.9% of NIs annually."
     },
     {
       name: "temporaryWorker",
       label: "Temporary Worker",
-      title: "Temporary Workers. Accounted for ≈5% of NIs in 2015. Includes temporary workers/trainees (including intracompany transfers and foreign reporters) and their spouses/minor children."
+      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children. Accounts for ≈3.7% of NIs annually."
     },
     {
       name: "studentExchange",
       label: "Student & Exchange",
-      title: "Students and Exchange Visitors. Accounted for ≈3% of NIs in 2015. Includes academic students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children."
+      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children. Accounts for ≈5.2% of NIs annually."
     },
     {
       name: "diplomatRep",
       label: "Diplomat & Representative",
-      title: "Diplomats and Other Representatives. Accounted for ≈1% of NIs in 2015. Includes all diplomats and representatives (including ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children."
+      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children. Accounts for ≈0.7% of NIs annually."
     },
     {
       name: "otherNI",
       label: "Other",
-      title: "Other. Accounted for ≈1% of NIs in 2015. Includes those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc."
+      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc. Accounts for ≈1.5% of NIs annually."
     }
   ],
   yearBounds: [
@@ -290,6 +304,11 @@ App.defaultProps = {
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
   //...datums
+}
+
+titleNotes = {
+  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 5-year average: ≈1.03 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
+  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>."
 }
 
 /*  return (

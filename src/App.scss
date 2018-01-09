@@ -17,6 +17,7 @@ path:hover {
   background-color: $background-color;
   height: 50px;
   padding: 20px;
+  margin-bottom: 20px;
   color: black;
 }
 
@@ -30,7 +31,7 @@ path:hover {
   height: calc(100vh - 60px);
   max-height: 500px;
   border: 1px solid black;
-  margin: auto;
+  margin: 5px;
 }
 
 
@@ -145,7 +146,14 @@ path:hover {
   background: #DDDDDD;
 }
 
+
+
 //Main Controls Section Styling
+.tooltip a {
+  color: white;
+}
+
+
 .controller-box {
   width: 525px;
   max-width: 95%;

@@ -10,6 +10,7 @@ path:hover {
   background-color: #ffffff;
   height: 50px;
   padding: 20px;
+  margin-bottom: 20px;
   color: black; }
 
 .App-title {
@@ -20,7 +21,7 @@ path:hover {
   height: calc(100vh - 60px);
   max-height: 500px;
   border: 1px solid black;
-  margin: auto; }
+  margin: 5px; }
 
 .year-display {
   margin: 5px 10px -5px 0px;
@@ -127,6 +128,9 @@ path:hover {
 
 .slider:focus::-ms-fill-upper {
   background: #DDDDDD; }
+
+.tooltip a {
+  color: white; }
 
 .controller-box {
   width: 525px;
