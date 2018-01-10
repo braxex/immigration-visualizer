@@ -10,7 +10,10 @@ import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
 
+//onClick={() => this.slideHandler(this.state.isPlaying,this.state.dataYear)}
+
 let titleNotes;
+let playing;
 class App extends Component {
 
   constructor(props) {
@@ -54,13 +57,20 @@ class App extends Component {
         <div id="legend-holder" className="legend-holder">
           <Legend colors={colors} thresholds={thresholds}/>
         </div>
-        <div id="year-display" className="year-display">Data: US Department of Homeland Security, {this.state.dataYear}</div>
+        <div id="year-display" className="year-display">
+          <Tooltip title={titleNotes.genMsg} size='small' position='bottom' trigger='mouseenter'
+            animation='shift' interactive='true' hideOnClick={true}>Data: US Department of Homeland Security, {this.state.dataYear}
+          </Tooltip>
+        </div>
 
         {/*Slider & Play Controls Section*/}
         <div id="slider-box" className="slider-box">
           <div>
             <i className={`fa fa-${this.state.isPlaying ? 'pause' : 'play'}-circle-o fa-2x`}
-              aria-hidden="true" onClick={() => this.toggleIsPlaying(this.state.isPlaying,this.state.dataYear)}></i>
+              aria-hidden="true" onClick={() => {
+                this.playToggle(this.state.isPlaying,this.state.dataYear);
+              }}
+            ></i>
             <input type="range" className="slider"
               min={this.props.yearBounds[0]}
               max={this.props.yearBounds[1]}
@@ -133,6 +143,7 @@ class App extends Component {
       dataYear: sliderValue,
       isPlaying: false
     })
+    clearInterval(playing);
     //console.log('this will reset the slideshow')
   }
 
@@ -160,23 +171,47 @@ class App extends Component {
     })
   }
 
-  toggleIsPlaying(playState,currYear) {     //BUG3 & BUG4
-    console.log('play status',this.state.isPlaying);
-    this.setState.bind(this)({
-      isPlaying: !playState,
-    });
-      if (currYear < 2015) {
-        this.setState({
-          dataYear: this.state.dataYear +1
+  playToggle() {
+    if (!this.state.isPlaying) {
+      this.slideHandler();
+      playing = setInterval(this.slideHandler.bind(this),750);
+    } else {
+      clearInterval(playing);
+      this.setState.bind(this)({
+        isPlaying: false
+      })
+    }
+  }
+
+  slideHandler() {     //BUG3 & BUG4
+    console.log('yeah it ran once');
+      if (!this.state.isPlaying) {
+        this.setState.bind(this)({
+          isPlaying: true,
+          dataYear: parseInt(this.state.dataYear,10)+1,
         })
       }
       else {
-        this.setState({
-          dataYear: 2005
-        })
+        console.log('data year',this.state.dataYear);
+        if (this.state.dataYear < 2015) {
+          this.setState.bind(this)({
+            dataYear: parseInt(this.state.dataYear,10)+1,
+          })
+        } else {
+          this.setState.bind(this)({
+            dataYear: 2005,
+            isPlaying: false,
+          })
+          clearInterval(playing);
+        }
       }
     }
+
+
+
 }
+
+
 
 class LPRCheckbox extends Component {
   render() {
@@ -265,7 +300,7 @@ App.defaultProps = {
     {
       name: "otherLPR",
       label: "Other",
-      title: "Others who qualify as a result of other special legislation extending NI status to classes of individuals from certain countries and in certain situations. Accounts for ≈2.1% of LPRs annually."
+      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations. Accounts for ≈2.1% of LPRs annually."
     }
   ],
   niItems: [
@@ -308,7 +343,8 @@ App.defaultProps = {
 
 titleNotes = {
   lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 5-year average: ≈1.03 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
-  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>."
+  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
+  genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> DW = Data withheld to limit disclosures, per government sources."
 }
 
 /*  return (

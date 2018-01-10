@@ -71,7 +71,7 @@ class Visualizer extends Component {
         csvHandler(csvData,nextProps.radioDataset);
         dataset = csvData;
         combinator(worldMap,dataset,flags);
-        console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), allCombined);
+        //console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), allCombined);
 
         newCombined = allCombined;
 
@@ -79,7 +79,7 @@ class Visualizer extends Component {
         getSubtotalKeys(nextProps);
         readData(newCombined);
         calcSelectedTotal(newCombined);
-        console.log('SEL CHECK',sumSelected);
+        //console.log('SEL CHECK',sumSelected);
 
         //restyle choropleth paths
         d3.select('#d3-mount-point').selectAll('path')
