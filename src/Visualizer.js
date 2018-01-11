@@ -3,83 +3,62 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import {csvHandler, combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
+import {combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
 import {flags} from './flags.js';
 
 //Variable Declarations
-let width = 0;
-let height = 0;
+let worldMap, svg, g, geoPath, projection, newCombined, sumSelected;
+let width, height = 0;
 let dataset = [{}];
-let worldMap;
-let svg;
-let g;
-let geoPath;
-let projection;
 let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR'];
-let newCombined;
-let sumSelected;
 
-//Called when Visualizer renders
 function initializeD3(worldMap, sumSelected, saveAppState) {
   const reactContainer = document.getElementById('D3-holder');
-  width = reactContainer.offsetWidth-2;
+  width = reactContainer.offsetWidth-1;
   height = reactContainer.offsetHeight;
   svg = d3.select('#d3-mount-point').append('svg')
     .attr('id', 'immigration-svg')
     .attr('height', height)
     .attr('max-height','90%')
     .attr('width', width)
-    //zoom functionality
-    .call(d3.zoom()
-      .scaleExtent([1,12])   //zoom bounds
+    .call(d3.zoom() //begin zoom functionality
+      .scaleExtent([1,12])
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
-    })).append('g'); //needed for zoom
-
+    })).append('g'); //end zoom functionality
   g = svg.append('g');
-
-  projection = d3geoproj.geoCylindricalStereographic() //more options here: https://goo.gl/9AMQao
+  projection = d3geoproj.geoCylindricalStereographic()
     .scale(165)
     .rotate([-11,0])
     .center([0,22])
     .translate([width/2,height/2]);
-
   geoPath = d3.geoPath()
     .projection(projection);
-
   goFill(g,geoPath,'LPR',sumSelected,saveAppState);
 }
 
-window.addEventListener('resize',function() {
-  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-2);
-  d3.select('#immigration-svg').attr('height', document.getElementById('D3-holder').offsetHeight-2);
-})
-
 class Visualizer extends Component {
+
   shouldComponentUpdate() {
-    return false; //prevents future re-renders of this component
+    return false;
   }
 
-  //re-runs each time some prop is changed
   componentWillReceiveProps(nextProps,svg,g,geoPath) {
     console.log('State is: ', nextProps);
+
     /*loads new dataset and prepares for manipulation*/
     d3.csv(("./"+nextProps.radioDataset+nextProps.dataYear+".csv"), function(err, csvData) {
       if (err) {
         console.log(err)
       } else {
-        csvHandler(csvData,nextProps.radioDataset);
         dataset = csvData;
         combinator(worldMap,dataset,flags);
-        //console.log(('DATASET IS '+nextProps.radioDataset+nextProps.dataYear), allCombined);
-
         newCombined = allCombined;
 
         //determine which data to display (based on checkboxes)
         getSubtotalKeys(nextProps);
         readData(newCombined);
         calcSelectedTotal(newCombined);
-        //console.log('SEL CHECK',sumSelected);
 
         //restyle choropleth paths
         d3.select('#d3-mount-point').selectAll('path')
@@ -92,7 +71,7 @@ class Visualizer extends Component {
   componentDidMount() {
     const self = this;
     //mount initial map
-    d3.json('./10m-s5p-pres_geo.json', (err,map) => {
+    d3.json('./map_geo.json', (err,map) => {
     //d3.json('./dum_topo.json', (err,map) => {   //topo try^
       if (err) {
         console.log(err)
@@ -104,7 +83,6 @@ class Visualizer extends Component {
             console.log(err)
           } else {
             //convert csv data points to numbers
-            csvHandler(csvData,'LPR');
             dataset = csvData;
             worldMap = map;
             combinator(worldMap,dataset,flags);
@@ -164,7 +142,6 @@ function parseNumberForTotal(value) {
   else if (typeof value === 'number') {
     return value;
   }
-  else return 0;
 }
 
 function calcSelectedTotal(data) {
@@ -172,10 +149,13 @@ function calcSelectedTotal(data) {
     if (country.immigrationData !== undefined) {
       return acc + parseInt(country.immigrationData.selectedTotal,10);
     }
-    else {
-      return acc;
-    }
+    else { return acc; }
   }, 0)
 }
+
+window.addEventListener('resize',function() {
+  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-1);
+  d3.select('#immigration-svg').attr('height', document.getElementById('D3-holder').offsetHeight-2);
+})
 
 export default Visualizer;

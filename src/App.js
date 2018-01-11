@@ -3,17 +3,15 @@ import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'react-tippy/dist/tippy.css';
 import {merge} from 'lodash';
-import Visualizer from './Visualizer.js';
-import Card from './Card.js';
-import Legend from './Legend.js';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
+import Visualizer from './Visualizer.js';
+import Card from './Card.js';
+import Legend from './Legend.js';
 
-//onClick={() => this.slideHandler(this.state.isPlaying,this.state.dataYear)}
+let titleNotes, playing;
 
-let titleNotes;
-let playing;
 class App extends Component {
 
   constructor(props) {
@@ -173,7 +171,7 @@ class App extends Component {
 
   playToggle() {
     if (!this.state.isPlaying) {
-      this.slideHandler();
+      this.slideHandler(this.state.dataYear);
       playing = setInterval(this.slideHandler.bind(this),750);
     } else {
       clearInterval(playing);
@@ -183,8 +181,14 @@ class App extends Component {
     }
   }
 
-  slideHandler() {     //BUG3 & BUG4
-    console.log('yeah it ran once');
+  slideHandler(maybe) { //BUG3
+    if (maybe) {
+      console.log('should linger');
+      this.setState.bind(this)({
+        isPlaying: true
+      })
+    }
+    else {
       if (!this.state.isPlaying) {
         this.setState.bind(this)({
           isPlaying: true,
@@ -192,7 +196,6 @@ class App extends Component {
         })
       }
       else {
-        console.log('data year',this.state.dataYear);
         if (this.state.dataYear < 2015) {
           this.setState.bind(this)({
             dataYear: parseInt(this.state.dataYear,10)+1,
@@ -206,12 +209,8 @@ class App extends Component {
         }
       }
     }
-
-
-
+  }
 }
-
-
 
 class LPRCheckbox extends Component {
   render() {
@@ -225,7 +224,7 @@ class LPRCheckbox extends Component {
             id={name}>
           </input>
           <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' interactive='true' hideOnClick={true}>
+            animation='shift' hideOnClick={true}>
             {label}
           </Tooltip>
         </label>
@@ -246,7 +245,7 @@ class NICheckbox extends Component {
             id={name}>
           </input>
           <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' interactive='true' hideOnClick={true}>
+            animation='shift' hideOnClick={true}>
             {label}
           </Tooltip>
         </label>
@@ -263,12 +262,16 @@ let niScale = d3.scaleThreshold()
                 .domain([0.01,0.1,0.25,.5,1,2.5,5])
                 .range(d3sc.schemeYlGnBu[9].slice(1));
 
-/*const datums = {}
-yearBounds = [2005,2015];
-for (let i=yearBounds[0]; i <= yearBounds[1]; i = i + 1) {
+const datums = {}
+let yearSpan = [2005,2015];
+for (let i=yearSpan[0]; i <= yearSpan[1]; i = i + 1) {
   datums['lpr' + i] = makeMyData(i, 'lpr');
   datums['ni' + i] = makeMyData(i, 'ni');
-} // add in each*/
+}
+
+function makeMyData() {
+
+}
 
 App.defaultProps = {
   lprItems: [
@@ -330,15 +333,12 @@ App.defaultProps = {
       title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc. Accounts for ≈1.5% of NIs annually."
     }
   ],
-  yearBounds: [
-    2005,
-    2015
-  ],
+  yearBounds: yearSpan,
   lprThresholds: lprScale.domain(),
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
-  //...datums
+  ...datums
 }
 
 titleNotes = {
@@ -346,12 +346,5 @@ titleNotes = {
   niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
   genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> DW = Data withheld to limit disclosures, per government sources."
 }
-
-/*  return (
-    <div className="info-visualizer">
-      {JSON.stringify(data,null,2)}
-    </div>
-  )
-}*/
 
 export default App;
