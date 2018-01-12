@@ -37,7 +37,7 @@ class App extends Component {
       dataYear: this.props.yearBounds[0],
       isPlaying: false,
       hoverCountry: null,
-      modal: true, //set to true before prod
+      modal: false, //set to true before prod
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: true};

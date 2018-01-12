@@ -10,7 +10,7 @@ let worldMap, svg, g, geoPath, projection, sumSelected, tempdat, selData;
 let width, height = 0;
 let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR'];
 
-export function passFiles(datums, map) {
+export function passFiles(datums, map) { //**
   tempdat = datums;
   worldMap = map;
 }
@@ -64,7 +64,7 @@ class Visualizer extends Component {
   componentDidMount() {
     const self = this;
 
-    function checkForData() {
+    function checkForData() { //**
       if (tempdat === undefined) {
     } else {
       clearInterval(checkInterval)

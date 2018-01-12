@@ -15,7 +15,7 @@ export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {
   if (d.immigrationData === undefined) {
     console.log('no immigration data for current year')
   } else {
-    //log country data on mouseover
+    //log country data on mouseover -- BUG1 -- still a bug -- feature to be deleted anyway
     var selCountry = countryData.find(item => item.id === d.id).immigrationData;
     console.log(selCountry.countryName+": "+(selCountry.selectedTotal).toLocaleString()+' people; '+(Math.round((((selCountry.selectedTotal)/immSum)*100)*100)/100).toLocaleString()+'%');
   }
@@ -45,7 +45,8 @@ export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
       .data(selData)
       .enter()
       .append('path')
-      .attr('fill', function(d) {return fillChoropleth(d,rdState,sumSelected)})
+      //.attr('fill', function(d) {return fillChoropleth(d,rdState,sumSelected)})
+      .attr('fill','gray')
       .attr('stroke','#333').attr('stroke-width','.015')
       .attr('d',geoPath)
       .on('mouseover', function(d, i, sumSelected) {handleMouseover(d, i, sumSelected, saveState, this)})
