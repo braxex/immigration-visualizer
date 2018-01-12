@@ -6,16 +6,19 @@ import * as d3geoproj from 'd3-geo-projection';
 import {goFill, fillChoropleth} from './formulas.js';
 
 //Variable Declarations
-let worldMap, svg, g, geoPath, projection, sumSelected, tempdat, selData;
+let worldMap, svg, g, geoPath, projection, sumSelected, tempdat;
 let width, height = 0;
-let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR'];
+export let csvData;
+export let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR']; //**
+export let whichSet;
+export let whichYear;
 
 export function passFiles(datums, map) { //**
   tempdat = datums;
   worldMap = map;
 }
 
-function initializeD3(worldMap, sumSelected, selData, saveAppState) {
+function initializeD3(worldMap, sumSelected, csvData, saveAppState) {
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth-1;
   height = reactContainer.offsetHeight;
@@ -37,7 +40,7 @@ function initializeD3(worldMap, sumSelected, selData, saveAppState) {
     .translate([width/2,height/2]);
   geoPath = d3.geoPath()
     .projection(projection);
-  goFill(g,geoPath,'LPR',sumSelected,selData,saveAppState);
+  goFill(g,geoPath,'LPR',sumSelected,csvData,saveAppState);
 }
 
 class Visualizer extends Component {
@@ -48,16 +51,18 @@ class Visualizer extends Component {
 
   componentWillReceiveProps(nextProps,svg,g,geoPath) {
     //determine which data to display
-    selData = tempdat[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
-    console.log('selData is',selData);
+    csvData = tempdat[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
+
+    whichYear = nextProps.dataYear;
+    whichSet = nextProps.radioDataset;
 
     getSubtotalKeys(nextProps);
-    readData(selData);
-    calcSelectedTotal(selData);
+    readData(csvData);
+    calcSelectedTotal(csvData);
 
     //restyle choropleth paths
     d3.select('#d3-mount-point').selectAll('path')
-      .data(selData)
+      .data(csvData)
       .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
   }
 
@@ -69,11 +74,11 @@ class Visualizer extends Component {
     } else {
       clearInterval(checkInterval)
       //determine which data to display
-      selData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
-      console.log('selData is',selData);
-      readData(selData);
-      calcSelectedTotal(selData);
-      initializeD3(worldMap,sumSelected,selData,self.props.saveAppState);
+      csvData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
+      console.log('csvData is',csvData);
+      readData(csvData);
+      calcSelectedTotal(csvData);
+      initializeD3(worldMap,sumSelected,csvData,self.props.saveAppState);
     }
   }
     var checkInterval = setInterval(checkForData,250);

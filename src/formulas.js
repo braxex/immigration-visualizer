@@ -4,21 +4,19 @@ import {} from './Visualizer.js';
 //import * as d3sc from 'd3-scale-chromatic';
 import {lprScale, niScale} from './App.js';
 
-let countryData, immSum;
-
 export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {
   saveState({hoverCountry: {
     id: d.id,
     x: countryDOM.getBoundingClientRect().x,
     y: countryDOM.getBoundingClientRect().y,
   }});
-  if (d.immigrationData === undefined) {
+  /*if (d.immigrationData === undefined) {
     console.log('no immigration data for current year')
   } else {
     //log country data on mouseover -- BUG1 -- still a bug -- feature to be deleted anyway
     var selCountry = countryData.find(item => item.id === d.id).immigrationData;
     console.log(selCountry.countryName+": "+(selCountry.selectedTotal).toLocaleString()+' people; '+(Math.round((((selCountry.selectedTotal)/immSum)*100)*100)/100).toLocaleString()+'%');
-  }
+  }*/
 }
 
 export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
@@ -26,7 +24,6 @@ export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
 }
 
   export function fillChoropleth(d,rdState,sumSelected) {
-    immSum = sumSelected;
     if (d.immigrationData === undefined) {
       return '#dddddd'
     } else {
@@ -39,10 +36,9 @@ export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
     }
   }
 
-  export function goFill(g, geoPath,rdState,sumSelected,selData,saveState) {
-    countryData = selData;
+  export function goFill(g, geoPath,rdState,sumSelected,csvData,saveState) {
     g.selectAll('path')
-      .data(selData)
+      .data(csvData)
       .enter()
       .append('path')
       //.attr('fill', function(d) {return fillChoropleth(d,rdState,sumSelected)})
