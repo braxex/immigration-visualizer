@@ -7,10 +7,22 @@ import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
 import Visualizer from './Visualizer.js';
+import {passFiles} from './Visualizer.js';
 import Card from './Card.js';
 import Legend from './Legend.js';
+import {flags} from './flags.js';
 
-let titleNotes, playing;
+let titleNotes, playing, dataFlags;
+let yearSpan = [2005,2015];
+export let lprScale = d3.scaleThreshold()
+                .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
+                .range(d3sc.schemePuBuGn[9].slice(1));
+export let niScale = d3.scaleThreshold()
+                .domain([0.01,0.1,0.25,.5,1,2.5,5])
+                .range(d3sc.schemeYlGnBu[9].slice(1));
+export let map;
+export let datums = {};
+
 
 class App extends Component {
 
@@ -24,7 +36,8 @@ class App extends Component {
       radioDataset: 'LPR',
       dataYear: this.props.yearBounds[0],
       isPlaying: false,
-      hoverCountry: null
+      hoverCountry: null,
+      modal: true, //set to true before prod
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: true};
@@ -46,6 +59,14 @@ class App extends Component {
           <h1 className="App-title">Immigration Visualizer</h1>
         </header>
 
+        {/*Modal Section*/}
+        <div className='modal-manager' style={{display: this.state.modal ? 'block' : 'none'}}
+          onClick={() => {
+            this.hideModal();
+          }}>
+          <Modal />
+        </div>
+
         {/*D3 Visualization Section*/}
         <div id="D3-holder" className="D3-holder">
           <Visualizer {...this.state} saveAppState={this.setState.bind(this)}/>
@@ -57,7 +78,8 @@ class App extends Component {
         </div>
         <div id="year-display" className="year-display">
           <Tooltip title={titleNotes.genMsg} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' interactive='true' hideOnClick={true}>Data: US Department of Homeland Security, {this.state.dataYear}
+            animation='shift' hideOnClick={true}>
+            Data: US Department of Homeland Security, {this.state.dataYear}
           </Tooltip>
         </div>
 
@@ -78,7 +100,7 @@ class App extends Component {
           </div>
         </div>
 
-        {/*Radio Control Section*/}
+        {/*RadioDataset Control Section*/}
         <div id="controller-box" className="controller-box">
           <div id="toggle-controls" className="toggle-controls">
             <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
@@ -127,13 +149,14 @@ class App extends Component {
               </div>
           </div>
         </div>
-
-        {/*Information Visualization Section (for build only, not prod)
-        <div>
-          <InfoVis {...this.state}/>
-        </div>*/}
       </div>
     );
+  }
+
+  hideModal() {
+    this.setState.bind(this)({
+      modal: false
+    })
   }
 
   changeDataYear(sliderValue) {
@@ -142,7 +165,6 @@ class App extends Component {
       isPlaying: false
     })
     clearInterval(playing);
-    //console.log('this will reset the slideshow')
   }
 
   changeLPRCheckboxState(shouldBeChecked,checkboxName) {
@@ -171,7 +193,7 @@ class App extends Component {
 
   playToggle() {
     if (!this.state.isPlaying) {
-      this.slideHandler(this.state.dataYear);
+      this.slideHandler(true);
       playing = setInterval(this.slideHandler.bind(this),750);
     } else {
       clearInterval(playing);
@@ -181,8 +203,8 @@ class App extends Component {
     }
   }
 
-  slideHandler(maybe) { //BUG3
-    if (maybe) {
+  slideHandler(firstTime) { //BUG3
+    if (firstTime) {
       console.log('should linger');
       this.setState.bind(this)({
         isPlaying: true
@@ -209,6 +231,29 @@ class App extends Component {
         }
       }
     }
+  }
+}
+
+
+class Modal extends Component {
+  render() {
+    return (
+      <div id='modal-holder' className="modal-holder">
+          <div className="image"><img src="liberty.png" alt="" title="test"></img></div>
+        <div className="main-modal">
+          <div className="colossus">From her beacon-hand<br/>
+                                    Glows world-wide welcome…<br/>
+                                    “Give me your tired, your poor,<br/>
+                                    Your huddled masses yearning to breathe free<br/>
+                                    Send these, the homeless, tempest-tost to me”
+          </div>
+          <div className="image-credit">image:
+            <a href="https://goo.gl/Wt4S3r" alt=""
+              target="_blank" rel="noopener noreferrer"> andrewasmith</a>
+          </div>
+        </div>
+      </div>
+    )
   }
 }
 
@@ -254,23 +299,75 @@ class NICheckbox extends Component {
   }
 }
 
-let lprScale = d3.scaleThreshold()
-                .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
-                .range(d3sc.schemePuBuGn[9].slice(1));
 
-let niScale = d3.scaleThreshold()
-                .domain([0.01,0.1,0.25,.5,1,2.5,5])
-                .range(d3sc.schemeYlGnBu[9].slice(1));
+d3.json('./map_geo.json', (err,geofile) => {
+  if (err) {
+    console.log(err)
+  } else {
+    map = geofile;
+    for (let i=yearSpan[0]; i <= yearSpan[1]; i = i + 1) {
+      datums['lpr' + i] = makeMyData(i, 'lpr');
+      datums['ni' + i] = makeMyData(i, 'ni');
+    }
+  }
+})
 
-const datums = {}
-let yearSpan = [2005,2015];
-for (let i=yearSpan[0]; i <= yearSpan[1]; i = i + 1) {
-  datums['lpr' + i] = makeMyData(i, 'lpr');
-  datums['ni' + i] = makeMyData(i, 'ni');
+function combinator(world, dataset, flags, year, radioset) {
+  if (radioset === 'lpr') {
+    dataset.forEach(function(d) {
+      d.immediateRelative = +d.immediateRelative;
+      d.familySponsored = +d.familySponsored;
+      d.employmentBased = +d.employmentBased;
+      d.refugeeAsylee = +d.refugeeAsylee;
+      d.diversityLottery = +d.diversityLottery;
+      d.adoptedOrphans = +d.adoptedOrphans;
+      d.otherLPR = +d.otherLPR;
+      d.total = +d.total;
+    })
+  }
+  if (radioset === 'ni') {
+    dataset.forEach(function(d) {
+      d.temporaryVisitor = +d.temporaryVisitor;
+      d.studentExchange = +d.studentExchange;
+      d.temporaryWorker = +d.temporaryWorker;
+      d.diplomatRep = +d.diplomatRep;
+      d.otherNI = +d.otherNI;
+      d.total = +d.total;
+    })
+  }
+  dataFlags = dataset.map(data => ({...data, href: flags.find(flag => flag[0] === data.ISO)[2]  }))
+  datums[radioset+year] = world.features.map(f => ({
+    type: 'Feature',
+    id: f.properties.iso_a3,
+    name: f.properties.name_long,
+    formalName: f.properties.formal_en,
+    population: f.properties.pop_est,
+    geometry: f.geometry,
+    immigrationData: dataFlags.find(dataFlag => dataFlag.ISO === f.properties.iso_a3)
+  })
+)/*.filter(x => x.immigrationData !== undefined)*/
+  .sort((a,b) => {
+    if (a.name < b.name) return -1;
+    if (a.name > b.name) return 1;
+    return 0;
+  });
+  if (year === 2005 && radioset === 'lpr') { //**only the first
+  passFiles(datums,map);
+  }
+  if (year === 2015 && radioset === 'ni') { //**and the last
+  passFiles(datums,map);
+  }
 }
 
-function makeMyData() {
-
+function makeMyData(year, radioset) {
+  /*loads new dataset and prepares for manipulation*/
+  d3.csv(("./"+radioset+year+".csv"), function(err, csvData) {
+    if (err) {
+      console.log(err)
+    } else {
+      combinator(map,csvData,flags,year,radioset);
+    }
+  });
 }
 
 App.defaultProps = {
@@ -278,59 +375,59 @@ App.defaultProps = {
     {
       name: "immediateRelative",
       label: "Immediate Relative",
-      title: "Spouses, parents, and minor children (including those being adopted) of US citizens. Accounts for ≈44.3% of LPRs annually."
+      title: "Spouses, parents, and minor children (including those being adopted) of US citizens.<br/>Accounts for ≈44.3% of LPRs annually."
     },
     {
       name: "familySponsored",
       label: "Family-Sponsored",
-      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)). Accounts for ≈20.1% of LPRs annually."
+      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)).<br/>Accounts for ≈20.1% of LPRs annually."
     },
     {
       name: "refugeeAsylee",
       label: "Refugee & Asylee",
-      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives. Accounts for ≈14.9% of LPRs annually."
+      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives.<br/>Accounts for ≈14.9% of LPRs annually."
     },
     {
       name: "employmentBased",
       label: "Employment-Based",
-      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children. Accounts for ≈14.3% of LPRs annually."
+      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children.<br/>Accounts for ≈14.3% of LPRs annually."
     },
     {
       name: "diversityLottery",
       label: "Diversity Lottery",
-      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program. Accounts for ≈4.3% of LPRs annually."
+      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program.<br/>Accounts for ≈4.3% of LPRs annually."
     },
     {
       name: "otherLPR",
       label: "Other",
-      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations. Accounts for ≈2.1% of LPRs annually."
+      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations.<br/>Accounts for ≈2.1% of LPRs annually."
     }
   ],
   niItems: [
     {
       name: "temporaryVisitor",
       label: "Temporary Visitor",
-      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions). Accounts for ≈88.9% of NIs annually."
+      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions).<br/>Accounts for ≈88.9% of NIs annually."
     },
     {
       name: "temporaryWorker",
       label: "Temporary Worker",
-      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children. Accounts for ≈3.7% of NIs annually."
+      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children.<br/>Accounts for ≈3.7% of NIs annually."
     },
     {
       name: "studentExchange",
       label: "Student & Exchange",
-      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children. Accounts for ≈5.2% of NIs annually."
+      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children.<br/>Accounts for ≈5.2% of NIs annually."
     },
     {
       name: "diplomatRep",
       label: "Diplomat & Representative",
-      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children. Accounts for ≈0.7% of NIs annually."
+      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children.<br/>Accounts for ≈0.7% of NIs annually."
     },
     {
       name: "otherNI",
       label: "Other",
-      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc. Accounts for ≈1.5% of NIs annually."
+      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc.<br/>Accounts for ≈1.5% of NIs annually."
     }
   ],
   yearBounds: yearSpan,
@@ -338,7 +435,7 @@ App.defaultProps = {
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
-  ...datums
+  datums
 }
 
 titleNotes = {
