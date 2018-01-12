@@ -1,6 +1,7 @@
 .legend {
   max-width: 250px;
   margin: -60px 15px 25px auto;
+  font-family: 'Lato', sans-serif;
 }
 
 .legend-title {
@@ -10,6 +11,8 @@
 
 .legend-title, .legend-number {
   font-size: .75em;
+  cursor: default;
+  user-select: none;
 }
 
 .legend-section {

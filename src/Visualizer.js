@@ -3,16 +3,19 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import {combinator, allCombined, goFill, fillChoropleth} from './formulas.js';
-import {flags} from './flags.js';
+import {goFill, fillChoropleth} from './formulas.js';
 
 //Variable Declarations
-let worldMap, svg, g, geoPath, projection, newCombined, sumSelected;
+let worldMap, svg, g, geoPath, projection, sumSelected, tempdat, selData;
 let width, height = 0;
-let dataset = [{}];
 let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR'];
 
-function initializeD3(worldMap, sumSelected, saveAppState) {
+export function passFiles(datums, map) {
+  tempdat = datums;
+  worldMap = map;
+}
+
+function initializeD3(worldMap, sumSelected, selData, saveAppState) {
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth-1;
   height = reactContainer.offsetHeight;
@@ -34,7 +37,7 @@ function initializeD3(worldMap, sumSelected, saveAppState) {
     .translate([width/2,height/2]);
   geoPath = d3.geoPath()
     .projection(projection);
-  goFill(g,geoPath,'LPR',sumSelected,saveAppState);
+  goFill(g,geoPath,'LPR',sumSelected,selData,saveAppState);
 }
 
 class Visualizer extends Component {
@@ -44,60 +47,37 @@ class Visualizer extends Component {
   }
 
   componentWillReceiveProps(nextProps,svg,g,geoPath) {
-    console.log('State is: ', nextProps);
+    //determine which data to display
+    selData = tempdat[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
+    console.log('selData is',selData);
 
-    /*loads new dataset and prepares for manipulation*/
-    d3.csv(("./"+nextProps.radioDataset+nextProps.dataYear+".csv"), function(err, csvData) {
-      if (err) {
-        console.log(err)
-      } else {
-        dataset = csvData;
-        combinator(worldMap,dataset,flags);
-        newCombined = allCombined;
+    getSubtotalKeys(nextProps);
+    readData(selData);
+    calcSelectedTotal(selData);
 
-        //determine which data to display (based on checkboxes)
-        getSubtotalKeys(nextProps);
-        readData(newCombined);
-        calcSelectedTotal(newCombined);
-
-        //restyle choropleth paths
-        d3.select('#d3-mount-point').selectAll('path')
-          .data(newCombined)
-          .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
-      }
-    });
+    //restyle choropleth paths
+    d3.select('#d3-mount-point').selectAll('path')
+      .data(selData)
+      .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
   }
 
   componentDidMount() {
     const self = this;
-    //mount initial map
-    d3.json('./map_geo.json', (err,map) => {
-    //d3.json('./dum_topo.json', (err,map) => {   //topo try^
-      if (err) {
-        console.log(err)
-      } else {
-        /*console.log('MAP DATA:', map)*/
-        //load csv data
-        d3.csv('./lpr2005.csv', function(err, csvData) {
-          if (err) {
-            console.log(err)
-          } else {
-            //convert csv data points to numbers
-            dataset = csvData;
-            worldMap = map;
-            combinator(worldMap,dataset,flags);
-            //console.log(('DATASET IS LPR2005'), allCombined);
 
-            newCombined = allCombined;
-            //determine which data to display (based on checkboxes)
-            readData(newCombined);
-            calcSelectedTotal(newCombined);
-            initializeD3(worldMap,sumSelected,self.props.saveAppState);
-          }
-        });
-      }
-    });
+    function checkForData() {
+      if (tempdat === undefined) {
+    } else {
+      clearInterval(checkInterval)
+      //determine which data to display
+      selData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
+      console.log('selData is',selData);
+      readData(selData);
+      calcSelectedTotal(selData);
+      initializeD3(worldMap,sumSelected,selData,self.props.saveAppState);
+    }
   }
+    var checkInterval = setInterval(checkForData,250);
+}
 
   render() {
     return (
