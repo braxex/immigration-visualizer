@@ -52,6 +52,7 @@ class App extends Component {
     let colors = (this.state.radioDataset === 'LPR') ? this.props.lprColors : this.props.niColors;
     let thresholds = (this.state.radioDataset === 'LPR') ? this.props.lprThresholds : this.props.niThresholds;
     return (
+
       <div className="App">
 
         {/*Header Section*/}
@@ -441,7 +442,7 @@ App.defaultProps = {
 titleNotes = {
   lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 5-year average: ≈1.03 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
   niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
-  genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> DW = Data withheld to limit disclosures, per government sources."
+  genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> dw = Data withheld to limit disclosures, per government sources."
 }
 
 export default App;

@@ -24,7 +24,7 @@ class Card extends Component {
     return(
       <div className='card-holder' style={{top: (this.props.y), left: this.props.x-425}}>
         {!countryData.immigrationData ?
-            <div className='card-nodata'>No data available.</div>
+            <div className='card-nodata'>No data provided.</div>
           :
           <div>
             <div className='card-head'>
@@ -33,7 +33,12 @@ class Card extends Component {
               </div>
               <div className='card-title'>
                 <p><b>{countryData.immigrationData.countryName}</b></p>
-                <p>{selectedYear} Selected Total: <b>{countryData.immigrationData.selectedTotal.toLocaleString()}</b></p>
+                <p>{selectedYear} Selected {selectedSet} Total: <b>
+                  {selectedSet === "LPR" ?
+                      selectedKeys.length === 6 ? countryData.immigrationData.total.toLocaleString()
+                      : countryData.immigrationData.selectedTotal.toLocaleString()
+                    : selectedKeys.length === 5 ? countryData.immigrationData.total.toLocaleString()
+                    : countryData.immigrationData.selectedTotal.toLocaleString()}</b></p>
               </div>
             </div>
             <div className='card-data lpr-card-data'
@@ -41,17 +46,17 @@ class Card extends Component {
                  {selectedSet === "LPR" ?
                    <div>
                     <p style={{fontWeight: selectedKeys.indexOf('immediateRelative') !== -1 ? 'bold' : 'normal'}}
-                      >Immediate Relative: {countryData.immigrationData.immediateRelative.toLocaleString() ? countryData.immigrationData.immediateRelative.toLocaleString(): 'DW'}</p>
+                      >Immediate Relative: {isNaN(countryData.immigrationData.immediateRelative) ? 'dw' : countryData.immigrationData.immediateRelative.toLocaleString()}</p>
                     <p style={{fontWeight: selectedKeys.indexOf('familySponsored') !== -1 ? 'bold' : 'normal'}}
-                      >Family-Sponsored: {countryData.immigrationData.familySponsored.toLocaleString() ? countryData.immigrationData.familySponsored.toLocaleString(): 'DW'}</p>
+                      >Family-Sponsored: {isNaN(countryData.immigrationData.familySponsored) ? 'dw' : countryData.immigrationData.familySponsored.toLocaleString()}</p>
                     <p style={{fontWeight: selectedKeys.indexOf('refugeeAsylee') !== -1 ? 'bold' : 'normal'}}
-                      >Refugee & Asylee: {countryData.immigrationData.refugeeAsylee.toLocaleString() ? countryData.immigrationData.refugeeAsylee.toLocaleString(): 'DW'}</p>
+                      >Refugee & Asylee: {isNaN(countryData.immigrationData.refugeeAsylee) ? 'dw' : countryData.immigrationData.refugeeAsylee.toLocaleString()}</p>
                     <p style={{fontWeight: selectedKeys.indexOf('employmentBased') !== -1 ? 'bold' : 'normal'}}
-                      >Employment-Based: {countryData.immigrationData.employmentBased.toLocaleString() ? countryData.immigrationData.employmentBased.toLocaleString(): 'DW'}</p>
+                      >Employment-Based: {isNaN(countryData.immigrationData.employmentBased) ? 'dw' : countryData.immigrationData.employmentBased.toLocaleString()}</p>
                     <p style={{fontWeight: selectedKeys.indexOf('diversityLottery') !== -1 ? 'bold' : 'normal'}}
-                      >Diversity Lottery: {countryData.immigrationData.diversityLottery.toLocaleString() ? countryData.immigrationData.diversityLottery.toLocaleString(): 'DW'}</p>
+                      >Diversity Lottery: {isNaN(countryData.immigrationData.diversityLottery) ? 'dw' : countryData.immigrationData.diversityLottery.toLocaleString()}</p>
                     <p style={{fontWeight: selectedKeys.indexOf('otherLPR') !== -1 ? 'bold' : 'normal'}}
-                      >Other: {countryData.immigrationData.otherLPR.toLocaleString() ? countryData.immigrationData.otherLPR.toLocaleString(): 'DW'}</p>
+                      >Other: {isNaN(countryData.immigrationData.otherLPR) ? 'dw' : countryData.immigrationData.otherLPR.toLocaleString()}</p>
                   </div>: <div></div>}
             </div>
             <div className='card-data ni-card-data'
@@ -59,15 +64,15 @@ class Card extends Component {
                  {selectedSet === "NI" ?
                   <div>
                    <p style={{fontWeight: selectedKeys.indexOf('temporaryVisitor') !== -1 ? 'bold' : 'normal'}}
-                     >Temporary Visitor: {countryData.immigrationData.temporaryVisitor.toLocaleString() ? countryData.immigrationData.temporaryVisitor.toLocaleString(): 'DW'}</p>
+                     >Temporary Visitor: {isNaN(countryData.immigrationData.temporaryVisitor) ? 'dw' : countryData.immigrationData.temporaryVisitor.toLocaleString()}</p>
                    <p style={{fontWeight: selectedKeys.indexOf('temporaryWorker') !== -1 ? 'bold' : 'normal'}}
-                     >Temporary Worker: {countryData.immigrationData.temporaryWorker.toLocaleString() ? countryData.immigrationData.temporaryWorker.toLocaleString(): 'DW'}</p>
+                     >Temporary Worker: {isNaN(countryData.immigrationData.temporaryWorker) ? 'dw' : countryData.immigrationData.temporaryWorker.toLocaleString()}</p>
                    <p style={{fontWeight: selectedKeys.indexOf('studentExchange') !== -1 ? 'bold' : 'normal'}}
-                     >Student & Exchange: {countryData.immigrationData.studentExchange.toLocaleString() ? countryData.immigrationData.studentExchange.toLocaleString(): 'DW'}</p>
+                     >Student & Exchange: {isNaN(countryData.immigrationData.studentExchange) ? 'dw' : countryData.immigrationData.studentExchange.toLocaleString()}</p>
                    <p style={{fontWeight: selectedKeys.indexOf('diplomatRep') !== -1 ? 'bold' : 'normal'}}
-                     >Diplomat & Representative: {countryData.immigrationData.diplomatRep.toLocaleString() ? countryData.immigrationData.diplomatRep.toLocaleString(): 'DW'}</p>
+                     >Diplomat & Representative: {isNaN(countryData.immigrationData.diplomatRep) ? 'dw' : countryData.immigrationData.diplomatRep.toLocaleString()}</p>
                    <p style={{fontWeight: selectedKeys.indexOf('otherNI') !== -1 ? 'bold' : 'normal'}}
-                     >Other: {countryData.immigrationData.otherNI.toLocaleString() ? countryData.immigrationData.otherNI.toLocaleString(): 'DW'}</p>
+                     >Other: {isNaN(countryData.immigrationData.otherNI) ? 'dw' : countryData.immigrationData.otherNI.toLocaleString()}</p>
                   </div>: <div></div>}
             </div>
           <div className='card-notes'
