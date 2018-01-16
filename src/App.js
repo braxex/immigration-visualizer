@@ -13,7 +13,7 @@ import Legend from './Legend.js';
 import {flags} from './flags.js';
 
 let titleNotes, playing, dataFlags;
-let yearSpan = [2005,2015];
+let yearSpan = [2005,2016];
 export let lprScale = d3.scaleThreshold()
                 .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
                 .range(d3sc.schemePuBuGn[9].slice(1));
@@ -219,7 +219,7 @@ class App extends Component {
         })
       }
       else {
-        if (this.state.dataYear < 2015) {
+        if (this.state.dataYear < 2016) {
           this.setState.bind(this)({
             dataYear: parseInt(this.state.dataYear,10)+1,
           })
@@ -355,7 +355,7 @@ function combinator(world, dataset, flags, year, radioset) {
   if (year === 2005 && radioset === 'lpr') { //**only the first
   passFiles(datums,map);
   }
-  if (year === 2015 && radioset === 'ni') { //**and the last
+  if (year === 2016 && radioset === 'ni') { //**and the last
   passFiles(datums,map);
   }
 }
@@ -376,59 +376,59 @@ App.defaultProps = {
     {
       name: "immediateRelative",
       label: "Immediate Relative",
-      title: "Spouses, parents, and minor children (including those being adopted) of US citizens.<br/>Accounts for ≈44.3% of LPRs annually."
+      title: "Spouses, parents, and minor children (including those being adopted) of US citizens.<br/>Accounts for ≈44.4% of LPRs annually."
     },
     {
       name: "familySponsored",
       label: "Family-Sponsored",
-      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)).<br/>Accounts for ≈20.1% of LPRs annually."
+      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)).<br/>Accounts for ≈21.0% of LPRs annually."
     },
     {
       name: "refugeeAsylee",
       label: "Refugee & Asylee",
-      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives.<br/>Accounts for ≈14.9% of LPRs annually."
+      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives.<br/>Accounts for ≈13.4% of LPRs annually."
     },
     {
       name: "employmentBased",
       label: "Employment-Based",
-      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children.<br/>Accounts for ≈14.3% of LPRs annually."
+      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children.<br/>Accounts for ≈13.6% of LPRs annually."
     },
     {
       name: "diversityLottery",
       label: "Diversity Lottery",
-      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program.<br/>Accounts for ≈4.3% of LPRs annually."
+      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program.<br/>Accounts for ≈4.7% of LPRs annually."
     },
     {
       name: "otherLPR",
       label: "Other",
-      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations.<br/>Accounts for ≈2.1% of LPRs annually."
+      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations.<br/>Accounts for ≈2.9% of LPRs annually."
     }
   ],
   niItems: [
     {
       name: "temporaryVisitor",
       label: "Temporary Visitor",
-      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions).<br/>Accounts for ≈88.9% of NIs annually."
+      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions).<br/>Accounts for ≈90.1% of NIs annually."
     },
     {
       name: "temporaryWorker",
       label: "Temporary Worker",
-      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children.<br/>Accounts for ≈3.7% of NIs annually."
+      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children.<br/>Accounts for ≈3.3% of NIs annually."
     },
     {
       name: "studentExchange",
       label: "Student & Exchange",
-      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children.<br/>Accounts for ≈5.2% of NIs annually."
+      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children.<br/>Accounts for ≈4.8% of NIs annually."
     },
     {
       name: "diplomatRep",
       label: "Diplomat & Representative",
-      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children.<br/>Accounts for ≈0.7% of NIs annually."
+      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children.<br/>Accounts for ≈0.6% of NIs annually."
     },
     {
       name: "otherNI",
       label: "Other",
-      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc.<br/>Accounts for ≈1.5% of NIs annually."
+      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc.<br/>Accounts for ≈1.2% of NIs annually."
     }
   ],
   yearBounds: yearSpan,
@@ -440,8 +440,8 @@ App.defaultProps = {
 }
 
 titleNotes = {
-  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 5-year average: ≈1.03 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
-  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 5-year average: ≈63.72 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
+  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). Data organized by country of birth. 3-year average: ≈1.08 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
+  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. Data organized by country of citizenship. 3-year average: ≈76.1 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
   genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> dw = Data withheld to limit disclosures, per government sources."
 }
 
