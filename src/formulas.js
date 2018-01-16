@@ -5,10 +5,15 @@ import {} from './Visualizer.js';
 import {lprScale, niScale} from './App.js';
 
 export function handleMouseover(d, i, sumSelected, saveState, countryDOM) {
+console.log(countryDOM.getBoundingClientRect());
   saveState({hoverCountry: {
     id: d.id,
-    x: countryDOM.getBoundingClientRect().x,
-    y: countryDOM.getBoundingClientRect().y,
+    xLeft: countryDOM.getBoundingClientRect().left,
+    yTop: countryDOM.getBoundingClientRect().top,
+    xRight: countryDOM.getBoundingClientRect().right,
+    yBottom: countryDOM.getBoundingClientRect().bottom,
+    xWidth: countryDOM.getBoundingClientRect().width,
+    yHeight: countryDOM.getBoundingClientRect().height,
   }});
 }
 
@@ -29,7 +34,7 @@ export function handleMouseout(d, i, sumSelected, saveState, countryDOM) {
     }
   }
 
-  export function goFill(g, geoPath,rdState,sumSelected,csvData,saveState) {
+  export function initialFill(g, geoPath,rdState,sumSelected,csvData,saveState, worldMap) {
     g.selectAll('path')
       .data(csvData)
       .enter()

@@ -15,7 +15,7 @@ import {flags} from './flags.js';
 let titleNotes, playing, dataFlags;
 let yearSpan = [2005,2016];
 export let lprScale = d3.scaleThreshold()
-                .domain([0.05,0.1,0.25,0.75,1.75,4,7.5])
+                .domain([0.05,0.1,0.25,0.75,1.5,4,7.5])
                 .range(d3sc.schemePuBuGn[9].slice(1));
 export let niScale = d3.scaleThreshold()
                 .domain([0.01,0.1,0.25,.5,1,2.5,5])
@@ -69,7 +69,7 @@ class App extends Component {
         </div>
 
         {/*D3 Visualization Section*/}
-        <div id="D3-holder" className="D3-holder">
+        <div id="D3-holder" className="D3-holder" ref={(div) => { this.D3box = div; }}>
           <Visualizer {...this.state} saveAppState={this.setState.bind(this)}/>
         </div>
         {this.state.hoverCountry && <Card {...this.state.hoverCountry}/>}
@@ -206,7 +206,6 @@ class App extends Component {
 
   slideHandler(firstTime) { //BUG3
     if (firstTime) {
-      console.log('should linger');
       this.setState.bind(this)({
         isPlaying: true
       })
@@ -234,7 +233,6 @@ class App extends Component {
     }
   }
 }
-
 
 class Modal extends Component {
   render() {
@@ -336,7 +334,8 @@ function combinator(world, dataset, flags, year, radioset) {
       d.total = +d.total;
     })
   }
-  dataFlags = dataset.map(data => ({...data, href: flags.find(flag => flag[0] === data.ISO)[2]  }))
+  dataFlags = dataset.map(data => ({...data, href: flags.find(
+    flag => flag[0] === data.ISO)[2]  }))
   datums[radioset+year] = world.features.map(f => ({
     type: 'Feature',
     id: f.properties.iso_a3,
@@ -344,7 +343,8 @@ function combinator(world, dataset, flags, year, radioset) {
     formalName: f.properties.formal_en,
     population: f.properties.pop_est,
     geometry: f.geometry,
-    immigrationData: dataFlags.find(dataFlag => dataFlag.ISO === f.properties.iso_a3)
+    immigrationData: dataFlags.find(dataFlag =>
+      dataFlag.ISO === f.properties.iso_a3)
   })
 )/*.filter(x => x.immigrationData !== undefined)*/
   .sort((a,b) => {
@@ -440,8 +440,8 @@ App.defaultProps = {
 }
 
 titleNotes = {
-  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). Data organized by country of birth. 3-year average: ≈1.08 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
-  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. Data organized by country of citizenship. 3-year average: ≈76.1 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
+  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). Data organized by country of birth.<br/>3-year average: ≈1.08 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
+  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. Data organized by country of citizenship.<br/>3-year average: ≈76.1 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
   genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> dw = Data withheld to limit disclosures, per government sources."
 }
 

@@ -4,7 +4,10 @@ import './Card.css';
 import {csvData} from './Visualizer.js';
 import {whichSet, whichYear, subtotalKeys} from './Visualizer.js'; //**
 
-let countryData, selectedSet, selectedYear, selectedKeys; //**
+let cardWidth, countryData, selectedSet, selectedYear, selectedKeys; //**
+
+cardWidth = 400; // how can i access the cardWidth? self.getBoundingClientRect().width?
+
 
 class Card extends Component {
   render() {
@@ -14,15 +17,25 @@ class Card extends Component {
       selectedSet = whichSet;
       selectedYear = whichYear;
       selectedKeys = subtotalKeys;
-      console.log(selectedKeys);
-      //selectedSet = ;
-      //selected Year;
-      console.log('countryData',countryData);
     }
     getCountryData();
+    function xPlacement(left,right,width) { //only handles left side issues  //can I get D3 box parameters from somewhere using refs?
+      if (left < cardWidth+17) { //if outside box on left
+        return right+25;  //return left of D3box?
+      } else { //if inside box on left
+        return left-(cardWidth+25);
+      }
+    }
+    function yPlacement(top,bottom,height) { //only handles top issues
+      if (top < 70) {
+        return top+(height/2);  //return top of D3box?
+      } else {
+        return top;
+      }
+    }
 
     return(
-      <div className='card-holder' style={{top: (this.props.y), left: this.props.x-425}}>
+      <div className='card-holder' style={{top: yPlacement(this.props.yTop,this.props.yBottom,this.props.yHeight), left: xPlacement(this.props.xLeft,this.props.xRight,this.props.xWidth)}}>
         {!countryData.immigrationData ?
             <div className='card-nodata'>No data provided.</div>
           :

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import {goFill, fillChoropleth} from './formulas.js';
+import {initialFill, fillChoropleth} from './formulas.js';
 
 //Variable Declarations
 let worldMap, svg, g, geoPath, projection, sumSelected, tempdat;
@@ -18,10 +18,10 @@ export function passFiles(datums, map) { //**
   worldMap = map;
 }
 
-function initializeD3(worldMap, sumSelected, csvData, saveAppState) {
+function initializeD3(worldMap) {
   const reactContainer = document.getElementById('D3-holder');
-  width = reactContainer.offsetWidth-1;
-  height = reactContainer.offsetHeight;
+  width = reactContainer.offsetWidth-2;
+  height = reactContainer.offsetHeight-2;
   svg = d3.select('#d3-mount-point').append('svg')
     .attr('id', 'immigration-svg')
     .attr('height', height)
@@ -40,13 +40,29 @@ function initializeD3(worldMap, sumSelected, csvData, saveAppState) {
     .translate([width/2,height/2]);
   geoPath = d3.geoPath()
     .projection(projection);
-  goFill(g,geoPath,'LPR',sumSelected,csvData,saveAppState);
 }
 
 class Visualizer extends Component {
 
   shouldComponentUpdate() {
     return false;
+  }
+
+  componentDidMount() {
+    const self = this;
+    function checkForData() { //**
+      if (tempdat === undefined) {
+    } else {
+      clearInterval(checkInterval)
+      //determine which data to display
+      csvData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
+      readData(csvData);
+      calcSelectedTotal(csvData);
+      initializeD3(worldMap);
+      initialFill(g,geoPath,'LPR',sumSelected,csvData,self.props.saveAppState,worldMap);
+      }
+    }
+    var checkInterval = setInterval(checkForData,250);
   }
 
   componentWillReceiveProps(nextProps,svg,g,geoPath) {
@@ -65,24 +81,6 @@ class Visualizer extends Component {
       .data(csvData)
       .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
   }
-
-  componentDidMount() {
-    const self = this;
-
-    function checkForData() { //**
-      if (tempdat === undefined) {
-    } else {
-      clearInterval(checkInterval)
-      //determine which data to display
-      csvData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
-      console.log('csvData is',csvData);
-      readData(csvData);
-      calcSelectedTotal(csvData);
-      initializeD3(worldMap,sumSelected,csvData,self.props.saveAppState);
-    }
-  }
-    var checkInterval = setInterval(checkForData,250);
-}
 
   render() {
     return (
@@ -139,7 +137,7 @@ function calcSelectedTotal(data) {
 }
 
 window.addEventListener('resize',function() {
-  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-1);
+  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-2);
   d3.select('#immigration-svg').attr('height', document.getElementById('D3-holder').offsetHeight-2);
 })
 

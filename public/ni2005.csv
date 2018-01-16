@@ -1,4 +1,4 @@
-Timor-LesteISO,countryName,temporaryVisitor,studentExchange,temporaryWorker,diplomatRep,otherNI,total,countryNote
+ISO,countryName,temporaryVisitor,studentExchange,temporaryWorker,diplomatRep,otherNI,total,countryNote
 AFG,Afghanistan,947,286,13,290,248,1784,
 ALB,Albania,7134,787,242,525,154,8842,
 DZA,Algeria,3204,239,207,635,121,4406,
@@ -50,7 +50,7 @@ DNK,Denmark,196472,3900,8068,2395,1664,212499,Includes data for the Faroe Island
 DJI,Djibouti,105,dw,7,93,2,213,
 DMA,Dominica,5766,230,152,72,180,6400,
 DOM,Dominican Republic,235181,3998,6958,1676,6295,254108,
-TLS,East Timor,0,12,0,dw,0,18,
+TLS,Timor-Leste,0,12,0,dw,0,18,
 ECU,Ecuador,145130,5206,4546,2211,4137,161230,
 EGY,Egypt,25707,2604,1972,3884,488,34655,
 SLV,El Salvador,180551,1738,1983,1887,3179,189338,
