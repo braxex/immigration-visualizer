@@ -10,8 +10,8 @@ export class Modal extends Component {
           <div className="colossus">From her beacon-hand<br/>
                                     Glows world-wide welcome…<br/>
                                     “Give me your tired, your poor,<br/>
-                                    Your huddled masses yearning to breathe free<br/>
-                                    Send these, the homeless, tempest-tost to me”
+                                    Your huddled masses yearning to breathe free,<br/>
+                                    Send these, the homeless, tempest-tost to me.”
           </div>
           <div className="image-credit">image:
             <a href="https://goo.gl/Wt4S3r" alt=""

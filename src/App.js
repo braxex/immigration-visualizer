@@ -6,16 +6,14 @@ import 'react-tippy/dist/tippy.css';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
-import {Visualizer, passFiles} from './Visualizer.js';
+import Visualizer from './Visualizer.js';
 import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
 import {lprStatics, niStatics, noteStatics} from './Statics.js';
 import Legend from './Legend.js';
 import Card from './Card.js';
-import {flags} from './flags.js';
 
 
-let playing, dataFlags;
-let yearSpan = [2005,2016];
+let playing;
 export let lprScale = d3.scaleThreshold()
                 .domain([0.05,0.1,0.25,0.75,1.5,4,7.5])
                 .range(d3sc.schemePuBuGn[9].slice(1));
@@ -23,7 +21,7 @@ export let niScale = d3.scaleThreshold()
                 .domain([0.01,0.1,0.25,.5,1,2.5,5])
                 .range(d3sc.schemeYlGnBu[9].slice(1));
 export let map;
-export let datums = {};
+let immigrationData = {};
 
 
 class App extends Component {
@@ -206,7 +204,7 @@ class App extends Component {
     }
   }
 
-  slideHandler(firstTime) { //BUG3
+  slideHandler(firstTime) {
     if (firstTime) {
       this.setState.bind(this)({
         isPlaying: true
@@ -236,89 +234,16 @@ class App extends Component {
   }
 }
 
-
-d3.json('./map_geo.json', (err,geofile) => {
-  if (err) {
-    console.log(err)
-  } else {
-    map = geofile;
-    for (let i=yearSpan[0]; i <= yearSpan[1]; i = i + 1) {
-      datums['lpr' + i] = makeMyData(i, 'lpr');
-      datums['ni' + i] = makeMyData(i, 'ni');
-    }
-  }
-})
-
-function combinator(world, dataset, flags, year, radioset) {
-  if (radioset === 'lpr') {
-    dataset.forEach(function(d) {
-      d.immediateRelative = +d.immediateRelative;
-      d.familySponsored = +d.familySponsored;
-      d.employmentBased = +d.employmentBased;
-      d.refugeeAsylee = +d.refugeeAsylee;
-      d.diversityLottery = +d.diversityLottery;
-      d.adoptedOrphans = +d.adoptedOrphans;
-      d.otherLPR = +d.otherLPR;
-      d.total = +d.total;
-    })
-  }
-  if (radioset === 'ni') {
-    dataset.forEach(function(d) {
-      d.temporaryVisitor = +d.temporaryVisitor;
-      d.studentExchange = +d.studentExchange;
-      d.temporaryWorker = +d.temporaryWorker;
-      d.diplomatRep = +d.diplomatRep;
-      d.otherNI = +d.otherNI;
-      d.total = +d.total;
-    })
-  }
-  dataFlags = dataset.map(data => ({...data, href: flags.find(
-    flag => flag[0] === data.ISO)[2]  }))
-  datums[radioset+year] = world.features.map(f => ({
-    type: 'Feature',
-    id: f.properties.iso_a3,
-    name: f.properties.name_long,
-    formalName: f.properties.formal_en,
-    population: f.properties.pop_est,
-    geometry: f.geometry,
-    immigrationData: dataFlags.find(dataFlag =>
-      dataFlag.ISO === f.properties.iso_a3)
-  })
-)/*.filter(x => x.immigrationData !== undefined)*/
-  .sort((a,b) => {
-    if (a.name < b.name) return -1;
-    if (a.name > b.name) return 1;
-    return 0;
-  });
-  if (year === 2005 && radioset === 'lpr') { //**only the first
-  passFiles(datums,map);
-  }
-  if (year === 2016 && radioset === 'ni') { //**and the last
-  passFiles(datums,map);
-  }
-}
-
-function makeMyData(year, radioset) {
-  /*loads new dataset and prepares for manipulation*/
-  d3.csv(("./"+radioset+year+".csv"), function(err, csvData) {
-    if (err) {
-      console.log(err)
-    } else {
-      combinator(map,csvData,flags,year,radioset);
-    }
-  });
-}
-
 App.defaultProps = {
   lprItems: lprStatics,
   niItems: niStatics,
   noteItems: noteStatics,
-  yearBounds: yearSpan,
+  yearBounds: [2005,2016],
   lprThresholds: lprScale.domain(),
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
-  datums
+  immigrationData
 }
 
 export default App;

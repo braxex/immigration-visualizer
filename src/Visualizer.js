@@ -4,18 +4,135 @@ import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
 import {initialFill, fillChoropleth} from './formulas.js';
+import {flags} from './flags.js';
 
 //Variable Declarations
-let worldMap, svg, g, geoPath, projection, sumSelected, tempdat;
+let svg, g, geoPath, projection, sumSelected;
 let width, height = 0;
+let immigrationData = {};
 export let csvData;
 export let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR']; //**
 export let whichSet;
 export let whichYear;
 
-export function passFiles(datums, map) { //**
-  tempdat = datums;
-  worldMap = map;
+class Visualizer extends Component {
+
+  shouldComponentUpdate() {
+    return false;
+  }
+
+  componentDidMount() {
+    const self = this;
+    loadData();
+    csvData = immigrationData[(this.props.radioDataset).toLowerCase()+this.props.dataYear];
+    readData(csvData);
+    calcSelectedTotal(csvData);
+    initialFill(g,geoPath,'LPR',sumSelected,csvData,self.props.saveAppState,self.props.map);
+  }
+
+  componentWillReceiveProps(nextProps,svg,g,geoPath) {
+    //determine which data to display
+    csvData = immigrationData[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
+
+    whichYear = nextProps.dataYear; //** passes to Card.js
+    whichSet = nextProps.radioDataset; //**passes to Card.js
+
+    getSubtotalKeys(nextProps);
+    readData(csvData);
+    calcSelectedTotal(csvData);
+
+    //restyle choropleth paths
+    d3.select('#d3-mount-point').selectAll('path')
+      .data(csvData)
+      .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
+  }
+
+  render() {
+    return (
+      <div id="d3-mount-point" ref={(elem) => { this.div = elem; }} />
+    );
+  }
+}
+
+function loadData() {
+  const self = this;
+  const immigrationData = {};
+
+  d3.json('./map_geo.json', (err,map) => {
+    if (err) {
+      console.log(err)
+    } else {
+        const combinerProgress = {
+          filesLeft: (self.props.yearBounds[1] - self.props.yearBounds[0])*2
+        };
+
+        this.setState({map})
+        initializeD3(map);
+
+        for (let i=self.props.yearBounds[0]; i <= self.props.yearBounds[1]; i++) {
+          immigrationData['lpr' + i] = makeMyData(i, 'lpr', combinerProgress, map);
+          immigrationData['ni' + i] = makeMyData(i, 'ni', combinerProgress, map);
+        }
+      }
+  });
+
+  function makeMyData(year, radioset, combinerProgress, map) {
+    /*loads new dataset and prepares for manipulation*/
+    d3.csv(("./"+radioset+year+".csv"), function(err, csvData) {
+      if (err) {
+        console.log(err)
+      } else {
+        combinator(map,csvData,flags,year,radioset);
+        combinerProgress.filesLeft -= 1;
+        if (combinerProgress.filesLeft === 0) {
+          self.setState({immigrationData});
+        }
+      }
+    });
+  }
+
+  function combinator(world, dataset, flags, year, radioset) {
+    if (radioset === 'lpr') {
+      dataset.forEach(function(d) {
+        d.immediateRelative = +d.immediateRelative;
+        d.familySponsored = +d.familySponsored;
+        d.employmentBased = +d.employmentBased;
+        d.refugeeAsylee = +d.refugeeAsylee;
+        d.diversityLottery = +d.diversityLottery;
+        d.adoptedOrphans = +d.adoptedOrphans;
+        d.otherLPR = +d.otherLPR;
+        d.total = +d.total;
+      })
+    }
+    if (radioset === 'ni') {
+      dataset.forEach(function(d) {
+        d.temporaryVisitor = +d.temporaryVisitor;
+        d.studentExchange = +d.studentExchange;
+        d.temporaryWorker = +d.temporaryWorker;
+        d.diplomatRep = +d.diplomatRep;
+        d.otherNI = +d.otherNI;
+        d.total = +d.total;
+      })
+    }
+    let dataFlags = dataset.map(data => ({...data, href: flags.find(
+      flag => flag[0] === data.ISO)[2]  }))
+    immigrationData[radioset+year] = world.features.map(f => ({
+      type: 'Feature',
+      id: f.properties.iso_a3,
+      name: f.properties.name_long,
+      formalName: f.properties.formal_en,
+      population: f.properties.pop_est,
+      geometry: f.geometry,
+      immigrationData: dataFlags.find(dataFlag =>
+        dataFlag.ISO === f.properties.iso_a3)
+    })
+  )/*.filter(x => x.immigrationData !== undefined)*/
+    .sort((a,b) => {
+      if (a.name < b.name) return -1;
+      if (a.name > b.name) return 1;
+      return 0;
+    });
+  }
 }
 
 function initializeD3(worldMap) {
@@ -45,53 +162,6 @@ function initializeD3(worldMap) {
 
   geoPath = d3.geoPath()
     .projection(projection);
-}
-
-export class Visualizer extends Component {
-
-  shouldComponentUpdate() {
-    return false;
-  }
-
-  componentDidMount() {
-    const self = this;
-    function checkForData() { //**
-      if (tempdat === undefined) {
-    } else {
-      clearInterval(checkInterval)
-      //determine which data to display
-      csvData = tempdat[(self.props.radioDataset).toLowerCase()+self.props.dataYear];
-      readData(csvData);
-      calcSelectedTotal(csvData);
-      initializeD3(worldMap);
-      initialFill(g,geoPath,'LPR',sumSelected,csvData,self.props.saveAppState,worldMap);
-      }
-    }
-    var checkInterval = setInterval(checkForData,250);
-  }
-
-  componentWillReceiveProps(nextProps,svg,g,geoPath) {
-    //determine which data to display
-    csvData = tempdat[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
-
-    whichYear = nextProps.dataYear;
-    whichSet = nextProps.radioDataset;
-
-    getSubtotalKeys(nextProps);
-    readData(csvData);
-    calcSelectedTotal(csvData);
-
-    //restyle choropleth paths
-    d3.select('#d3-mount-point').selectAll('path')
-      .data(csvData)
-      .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
-  }
-
-  render() {
-    return (
-      <div id="d3-mount-point" ref={(elem) => { this.div = elem; }} />
-    );
-  }
 }
 
 function getSubtotalKeys(nextProps) {
