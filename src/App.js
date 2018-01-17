@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
+import {merge} from 'lodash';
 import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'react-tippy/dist/tippy.css';
-import {merge} from 'lodash';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
-import Visualizer from './Visualizer.js';
-import {passFiles} from './Visualizer.js';
-import Card from './Card.js';
+import {Visualizer, passFiles} from './Visualizer.js';
+import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
+import {lprStatics, niStatics, noteStatics} from './Statics.js';
 import Legend from './Legend.js';
+import Card from './Card.js';
 import {flags} from './flags.js';
 
-let titleNotes, playing, dataFlags;
+
+let playing, dataFlags;
 let yearSpan = [2005,2016];
 export let lprScale = d3.scaleThreshold()
                 .domain([0.05,0.1,0.25,0.75,1.5,4,7.5])
@@ -78,7 +80,7 @@ class App extends Component {
           <Legend colors={colors} thresholds={thresholds}/>
         </div>
         <div id="year-display" className="year-display">
-          <Tooltip title={titleNotes.genMsg} size='small' position='bottom' trigger='mouseenter'
+          <Tooltip title={this.props.noteItems.genMsg} size='small' position='bottom' trigger='mouseenter'
             animation='shift' hideOnClick={true}>
             Data: US Department of Homeland Security, {this.state.dataYear}
           </Tooltip>
@@ -107,7 +109,7 @@ class App extends Component {
             <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#666666'}}>
               <label>
-                <Tooltip title={titleNotes.lprMsg} size='small' position='left-start' trigger='mouseenter'
+                <Tooltip title={this.props.noteItems.lprMsg} size='small' position='left-start' trigger='mouseenter'
                   animation='shift' interactive='true' hideOnClick={true}>LPR
                 </Tooltip>
                 <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
@@ -118,7 +120,7 @@ class App extends Component {
             <div id='ni-toggle-box' className='ni-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='NI' ? '#000000' : '#666666'}}>
               <label>
-                <Tooltip title={titleNotes.niMsg} size='small' position='right-start' trigger='mouseenter'
+                <Tooltip title={this.props.noteItems.niMsg} size='small' position='right-start' trigger='mouseenter'
                   animation='shift' interactive='true' hideOnClick={true}>NI
                 </Tooltip>
                 <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
@@ -234,70 +236,6 @@ class App extends Component {
   }
 }
 
-class Modal extends Component {
-  render() {
-    return (
-      <div id='modal-holder' className="modal-holder">
-          <div className="image"><img src="liberty.png" alt="" title="test"></img></div>
-        <div className="main-modal">
-          <div className="colossus">From her beacon-hand<br/>
-                                    Glows world-wide welcome…<br/>
-                                    “Give me your tired, your poor,<br/>
-                                    Your huddled masses yearning to breathe free<br/>
-                                    Send these, the homeless, tempest-tost to me”
-          </div>
-          <div className="image-credit">image:
-            <a href="https://goo.gl/Wt4S3r" alt=""
-              target="_blank" rel="noopener noreferrer"> andrewasmith</a>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
-
-class LPRCheckbox extends Component {
-  render() {
-    const {checkboxItem,itemChecked,changeLPRCheckboxState} = this.props;
-    const {name, label, title} = checkboxItem;
-    return (
-      <div className="checkbox-item-holder">
-        <label>
-          <input className="checkbox" type="checkbox" checked={itemChecked}
-            onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
-            id={name}>
-          </input>
-          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' hideOnClick={true}>
-            {label}
-          </Tooltip>
-        </label>
-      </div>
-    )
-  }
-}
-
-class NICheckbox extends Component {
-  render() {
-    const {checkboxItem,itemChecked,changeNICheckboxState} = this.props;
-    const {name, label, title} = checkboxItem;
-    return (
-      <span>
-        <label>
-          <input type="checkbox" checked={itemChecked}
-            onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
-            id={name}>
-          </input>
-          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' hideOnClick={true}>
-            {label}
-          </Tooltip>
-        </label>
-      </span>
-    )
-  }
-}
-
 
 d3.json('./map_geo.json', (err,geofile) => {
   if (err) {
@@ -372,77 +310,15 @@ function makeMyData(year, radioset) {
 }
 
 App.defaultProps = {
-  lprItems: [
-    {
-      name: "immediateRelative",
-      label: "Immediate Relative",
-      title: "Spouses, parents, and minor children (including those being adopted) of US citizens.<br/>Accounts for ≈44.4% of LPRs annually."
-    },
-    {
-      name: "familySponsored",
-      label: "Family-Sponsored",
-      title: "Unmarried adult children of US citizens and LPRs (and their minor children), as well as immediate relatives of LPRs (spouses, minor children, adult children (and their minor children), and adult siblings (and their minor children)).<br/>Accounts for ≈21.0% of LPRs annually."
-    },
-    {
-      name: "refugeeAsylee",
-      label: "Refugee & Asylee",
-      title: "Those who have been persecuted or fear they will be persecuted on the basis of race, religion, nationality, and/or membership in a social or political group, as well as their immediate relatives.<br/>Accounts for ≈13.4% of LPRs annually."
-    },
-    {
-      name: "employmentBased",
-      label: "Employment-Based",
-      title: "Those who emigrate for employment (priority workers, advanced professionals, skilled workers, etc.) and their spouses/minor children.<br/>Accounts for ≈13.6% of LPRs annually."
-    },
-    {
-      name: "diversityLottery",
-      label: "Diversity Lottery",
-      title: "Those who emigrate to the US from countries with relatively low levels of immigration under the Diversity Immigration Visa Program.<br/>Accounts for ≈4.7% of LPRs annually."
-    },
-    {
-      name: "otherLPR",
-      label: "Other",
-      title: "Others who qualify as a result of other special legislation extending LPR status to classes of individuals from certain countries and in certain situations.<br/>Accounts for ≈2.9% of LPRs annually."
-    }
-  ],
-  niItems: [
-    {
-      name: "temporaryVisitor",
-      label: "Temporary Visitor",
-      title: "Those visiting the US for pleasure (vacation, visiting family/friends, or for medical treatment) or business (attending business meetings and conferences/conventions).<br/>Accounts for ≈90.1% of NIs annually."
-    },
-    {
-      name: "temporaryWorker",
-      label: "Temporary Worker",
-      title: "Temporary workers/trainees (intracompany transfers, foreign reporters) and their spouses/minor children.<br/>Accounts for ≈3.3% of NIs annually."
-    },
-    {
-      name: "studentExchange",
-      label: "Student & Exchange",
-      title: "Students and exchange visitors (scholars, physicians, teachers, etc.) and their spouses/minor children.<br/>Accounts for ≈4.8% of NIs annually."
-    },
-    {
-      name: "diplomatRep",
-      label: "Diplomat & Representative",
-      title: "Diplomats and representatives (ambassadors, public ministers, diplomats, consular officers, and accompanying attendants/personal employees) and their spouses/minor children.<br/>Accounts for ≈0.6% of NIs annually."
-    },
-    {
-      name: "otherNI",
-      label: "Other",
-      title: "Those in immediate transit through the US, commuter students, fiancé(e)s and spouses of US citizens, etc.<br/>Accounts for ≈1.2% of NIs annually."
-    }
-  ],
+  lprItems: lprStatics,
+  niItems: niStatics,
+  noteItems: noteStatics,
   yearBounds: yearSpan,
   lprThresholds: lprScale.domain(),
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
   datums
-}
-
-titleNotes = {
-  lprMsg: "Lawful permanent residents (LPRs, often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). Data organized by country of birth.<br/>3-year average: ≈1.08 million/year. <br/> <br/> For more information, visit <a href='https://goo.gl/dN78yY'>https://goo.gl/dN78yY</a>.",
-  niMsg: "Nonimmigrants (NIs) are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. Data organized by country of citizenship.<br/>3-year average: ≈76.1 million/year. <br/> <br/> For more information visit <a href='https://goo.gl/LJLYzc'>https://goo.gl/LJLYzc</a>.",
-  genMsg: "Data not shown for those with unknown country of birth/origin and for countries where total activity count was less than 10 people. <br/> dw = Data withheld to limit disclosures, per government sources."
 }
 
 export default App;

@@ -19,9 +19,11 @@ export function passFiles(datums, map) { //**
 }
 
 function initializeD3(worldMap) {
+  //create d3 map container
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth-2;
   height = reactContainer.offsetHeight-2;
+
   svg = d3.select('#d3-mount-point').append('svg')
     .attr('id', 'immigration-svg')
     .attr('height', height)
@@ -32,17 +34,20 @@ function initializeD3(worldMap) {
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
     })).append('g'); //end zoom functionality
+
   g = svg.append('g');
+
   projection = d3geoproj.geoCylindricalStereographic()
     .scale(165)
     .rotate([-11,0])
     .center([0,22])
     .translate([width/2,height/2]);
+
   geoPath = d3.geoPath()
     .projection(projection);
 }
 
-class Visualizer extends Component {
+export class Visualizer extends Component {
 
   shouldComponentUpdate() {
     return false;
