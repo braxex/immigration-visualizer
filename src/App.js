@@ -1,20 +1,20 @@
+
 import React, { Component } from 'react';
-import {merge} from 'lodash';
 import './App.min.css';
 import 'font-awesome/css/font-awesome.min.css';
 import 'react-tippy/dist/tippy.css';
 import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
+import {merge} from 'lodash';
 import { Tooltip } from 'react-tippy';
 import Visualizer from './Visualizer.js';
-import {flags} from './flags.js';
-import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
-import {lprStatics, niStatics, noteStatics} from './Statics.js';
 import Legend from './Legend.js';
 import Card from './Card.js';
+import {flags} from './Flags.js';
+import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
+import {lprStatics, niStatics, noteStatics} from './Statics.js';
 
-
-let playing;
+//Variable Declarations
 export let lprScale = d3.scaleThreshold()
                 .domain([0.05,0.1,0.25,0.75,1.5,4,7.5])
                 .range(d3sc.schemePuBuGn[9].slice(1));
@@ -23,6 +23,7 @@ export let niScale = d3.scaleThreshold()
                 .range(d3sc.schemeYlGnBu[9].slice(1));
 export let map;
 let yearBounds = [2005,2016];
+let playing;
 
 
 class App extends Component {
@@ -39,7 +40,7 @@ class App extends Component {
       isPlaying: false,
       hoverCountry: null,
       map: null,
-      immigrationData: null,
+      datums: null,
       modal: true, //set to true before prod
     };
     this.props.lprItems.forEach(function(item) {
@@ -58,8 +59,8 @@ class App extends Component {
   render() {
     const selectedCategories = this.getSelectedCategories();
     const selectedDataset = (
-      this.state.immigrationData &&
-      this.state.immigrationData[(this.state.radioDataset).toLowerCase()+this.state.dataYear]
+      this.state.datums &&
+      this.state.datums[(this.state.radioDataset).toLowerCase()+this.state.dataYear]
     );
     let countryImmigrationData = selectedDataset && selectedDataset.find(item => {
 
@@ -69,8 +70,10 @@ class App extends Component {
       } else {
           countryImmigrationData = {};
       }
-    const colors = (this.state.radioDataset === 'LPR') ? this.props.lprColors : this.props.niColors;
-    const thresholds = (this.state.radioDataset === 'LPR') ? this.props.lprThresholds : this.props.niThresholds;
+    const colors = (this.state.radioDataset === 'LPR') ?
+                    this.props.lprColors : this.props.niColors;
+    const thresholds = (this.state.radioDataset === 'LPR') ?
+                        this.props.lprThresholds : this.props.niThresholds;
 
     return (
 
@@ -94,24 +97,35 @@ class App extends Component {
         <div id="D3-holder"
           className="D3-holder"
           ref={(div) => { this.D3box = div; }}>
-          <Visualizer {...this.state}
-                      {...this.defaultProps}
-                      saveAppState={this.setState.bind(this)}
-                      selectedCategories={selectedCategories}
-                      selectedDataset={selectedDataset}/>
+          <Visualizer
+            {...this.state}
+            {...this.defaultProps}
+            saveAppState={this.setState.bind(this)}
+            selectedCategories={selectedCategories}
+            selectedDataset={selectedDataset}/>
         </div>
+
+        {/*Card Section*/}
         {this.state.hoverCountry && <Card
           radioDataset= {this.state.radioDataset}
           dataYear= {this.state.dataYear} {...this.state.hoverCountry}
           countryImmigrationData={countryImmigrationData}
           selectedCategories={selectedCategories}/>}
 
+        {/*Legend & Year Display Section*/}
         <div id="legend-holder" className="legend-holder">
-          <Legend colors={colors} thresholds={thresholds}/>
+          <Legend
+            colors={colors}
+            thresholds={thresholds}/>
         </div>
         <div id="year-display" className="year-display">
-          <Tooltip title={this.props.noteItems.genMsg} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' hideOnClick={true}>
+          <Tooltip
+            title={this.props.noteItems.genMsg}
+            size='small'
+            position='bottom'
+            trigger='mouseenter'
+            animation='shift'
+            hideOnClick={true}>
             Data: US Department of Homeland Security, {this.state.dataYear}
           </Tooltip>
         </div>
@@ -120,7 +134,8 @@ class App extends Component {
         <div id="slider-box" className="slider-box">
           <div>
             <i className={`fa fa-${this.state.isPlaying ? 'pause' : 'play'}-circle-o fa-2x`}
-              aria-hidden="true" onClick={() => {
+               aria-hidden="true"
+               onClick={() => {
                 this.playToggle(this.state.isPlaying,this.state.dataYear);
               }}
             ></i>
@@ -139,10 +154,19 @@ class App extends Component {
             <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#666666'}}>
               <label>
-                <Tooltip title={this.props.noteItems.lprMsg} size='small' position='left-start' trigger='mouseenter'
-                  animation='shift' interactive='true' hideOnClick={true}>LPR
+                <Tooltip
+                  title={this.props.noteItems.lprMsg}
+                  size='small'
+                  position='left-start'
+                  trigger='mouseenter'
+                  animation='shift'
+                  interactive='true'
+                  hideOnClick={true}>LPR
                 </Tooltip>
-                <input name="radio" type="radio" id="lpr-radio" className="lpr-radio" value="LPR"
+                <input id="lpr-radio" className="lpr-radio"
+                  name="radio"
+                  type="radio"
+                  value="LPR"
                   defaultChecked={true}
                   onChange={(event) => this.changeRadioDataset(event.target.value)}></input>
               </label>
@@ -150,10 +174,19 @@ class App extends Component {
             <div id='ni-toggle-box' className='ni-toggle-box toggle-box'
               style={{color: this.state.radioDataset==='NI' ? '#000000' : '#666666'}}>
               <label>
-                <Tooltip title={this.props.noteItems.niMsg} size='small' position='right-start' trigger='mouseenter'
-                  animation='shift' interactive='true' hideOnClick={true}>NI
+                <Tooltip
+                  title={this.props.noteItems.niMsg}
+                  size='small'
+                  position='right-start'
+                  trigger='mouseenter'
+                  animation='shift'
+                  interactive='true'
+                  hideOnClick={true}>NI
                 </Tooltip>
-                <input name="radio" type="radio" id="ni-radio" className="ni-radio" value="NI"
+                <input id="ni-radio" className="ni-radio"
+                  name="radio"
+                  type="radio"
+                  value="NI"
                   onChange={(event) =>
                     this.changeRadioDataset(event.target.value)}></input>
               </label>
@@ -165,7 +198,8 @@ class App extends Component {
               <div className='checkbox-holder lpr-checkbox-div'
                 style={{display: this.state.radioDataset==='LPR' ? 'block' : 'none'}}>
                 {this.props.lprItems.map(function(item, index){
-                  return <LPRCheckbox key={index}
+                  return <LPRCheckbox
+                    key={index}
                     checkboxItem={item}
                     itemChecked={this.state.LPR[item.name].checkedStatus}
                     changeLPRCheckboxState={this.changeLPRCheckboxState.bind(this)}/>;
@@ -174,7 +208,8 @@ class App extends Component {
               <div className='checkbox-holder ni-checkbox-div'
                 style={{display: this.state.radioDataset==='NI' ? 'block' : 'none'}}>
                 {this.props.niItems.map(function(item, index){
-                  return <NICheckbox key={index}
+                  return <NICheckbox
+                    key={index}
                     checkboxItem={item}
                     itemChecked={this.state.NI[item.name].checkedStatus}
                     changeNICheckboxState={this.changeNICheckboxState.bind(this)}/>;
@@ -273,7 +308,7 @@ class App extends Component {
 
   loadData() {
     const self = this;
-    const immigrationData = {};
+    const datums = {};
 
     d3.json('./map_geo.json', (err,map) => {
       if (err) {
@@ -285,8 +320,8 @@ class App extends Component {
           this.setState({map})
 
           for (let i=yearBounds[0]; i <= yearBounds[1]; i++) {
-            immigrationData['lpr' + i] = makeMyData(i, 'lpr', combinerProgress, map);
-            immigrationData['ni' + i] = makeMyData(i, 'ni', combinerProgress, map);
+            datums['lpr' + i] = makeMyData(i, 'lpr', combinerProgress, map);
+            datums['ni' + i] = makeMyData(i, 'ni', combinerProgress, map);
           }
         }
     });
@@ -300,7 +335,7 @@ class App extends Component {
           combinator(map,csvData,flags,year,radioset);
           combinerProgress.filesLeft -= 1;
           if (combinerProgress.filesLeft === 0) {
-            self.setState({immigrationData});
+            self.setState({datums});
           }
         }
       });
@@ -331,14 +366,14 @@ class App extends Component {
       }
       let dataFlags = dataset.map(data => ({...data, href: flags.find(
         flag => flag[0] === data.ISO)[2]  }))
-      immigrationData[radioset+year] = world.features.map(f => ({
+      datums[radioset+year] = world.features.map(f => ({
         type: 'Feature',
         id: f.properties.iso_a3,
         name: f.properties.name_long,
         formalName: f.properties.formal_en,
         population: f.properties.pop_est,
         geometry: f.geometry,
-        immigrationData: dataFlags.find(dataFlag =>
+        immigrationData: dataFlags.find(dataFlag => //** maybe change?
           dataFlag.ISO === f.properties.iso_a3)
       })
     )

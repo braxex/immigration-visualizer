@@ -1,4 +1,4 @@
-/*D3 Visualizer*/
+
 import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
@@ -16,21 +16,20 @@ class Visualizer extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
     const {map, selectedDataset, radioDataset, selectedCategories, modal} = nextProps;
 
     if (this.props.map !== map && this.props.map === null) {
       initializeD3(map);
     }
 
+    //to run once when data is available
     if (this.props.selectedDataset !== selectedDataset && this.props.selectedDataset === null) {
-      setInitialFillAndBindings(g, geoPath, selectedDataset, nextProps.saveAppState); //g, geoPath,selectedDataset, saveState
+      setInitialFillAndBindings(g, geoPath, selectedDataset, nextProps.saveAppState);
     }
 
+    //to run each time after initial data is available
     if (!modal && selectedDataset) {
       readData(selectedDataset, selectedCategories);
-
-      //restyle choropleth paths
       d3.select('#d3-mount-point').selectAll('path')
         .data(selectedDataset)
         .attr('fill', (d) => fillChoropleth(d, radioDataset, calcWorldSelectedTotal(selectedDataset)))
@@ -55,11 +54,11 @@ function initializeD3(worldMap) {
     .attr('height', height)
     .attr('max-height','90%')
     .attr('width', width)
-    .call(d3.zoom() //begin zoom functionality
+    .call(d3.zoom() //zoom functionality
       .scaleExtent([1,12])
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
-    })).append('g'); //end zoom functionality
+    })).append('g');
 
   g = svg.append('g');
 
@@ -129,7 +128,7 @@ function setInitialFillAndBindings(g, geoPath,selectedDataset, saveState) {
 
 function handleMouseover(d, saveState, countryDOM) {
   const elementBox = countryDOM.getBoundingClientRect();
-  console.log(elementBox);
+  console.log(elementBox);  //^ remove before prod
   saveState({hoverCountry: {
     id: d.id,
     xLeft: elementBox.left,

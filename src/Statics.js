@@ -1,3 +1,4 @@
+
 export let lprStatics = [
     {
       name: "immediateRelative",

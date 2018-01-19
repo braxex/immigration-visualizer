@@ -1,9 +1,7 @@
-/*Legend*/
+
 import React, { Component } from 'react';
 import './Legend.css';
 
-/*const reactContainer = document.getElementById('legend-holder');
-width = reactContainer.offsetWidth;*/
 let width = 30;
 
 class Legend extends Component {
@@ -26,6 +24,7 @@ class Legend extends Component {
       </div>
     );
   }
+
   componentDidMount() {
     const self = this;
     Object.keys(this.elems).forEach(function(item){
@@ -41,10 +40,10 @@ class Legend extends Component {
       elem.style.left=(width-(elem.offsetWidth/2))+'px';
     })
   }
+
   componentWillMount() {
     this.elems={};
   }
 }
-
 
 export default Legend;

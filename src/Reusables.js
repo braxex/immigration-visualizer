@@ -1,3 +1,4 @@
+
 import React, { Component } from 'react';
 import { Tooltip } from 'react-tippy';
 
@@ -15,7 +16,7 @@ export class Modal extends Component {
           </div>
           <div className="image-credit">image:
             <a href="https://goo.gl/Wt4S3r" alt=""
-              target="_blank" rel="noopener noreferrer"> andrewasmith</a>
+               target="_blank" rel="noopener noreferrer"> andrewasmith</a>
           </div>
         </div>
       </div>
@@ -34,8 +35,13 @@ export class LPRCheckbox extends Component {
             onChange={(event) => {changeLPRCheckboxState(event.target.checked,name)}}
             id={name}>
           </input>
-          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' hideOnClick={true}>
+          <Tooltip
+              title={title}
+              size='small'
+              position='bottom'
+              trigger='mouseenter'
+              animation='shift'
+              hideOnClick={true}>
             {label}
           </Tooltip>
         </label>
@@ -55,8 +61,13 @@ export class NICheckbox extends Component {
             onChange={(event) => {changeNICheckboxState(event.target.checked,name)}}
             id={name}>
           </input>
-          <Tooltip title={title} size='small' position='bottom' trigger='mouseenter'
-            animation='shift' hideOnClick={true}>
+          <Tooltip
+              title={title}
+              size='small'
+              position='bottom'
+              trigger='mouseenter'
+              animation='shift'
+              hideOnClick={true}>
             {label}
           </Tooltip>
         </label>
