@@ -1,24 +1,17 @@
 /*D3 Cards*/
 import React, { Component } from 'react';
 import './Card.css';
-import {csvData} from './Visualizer.js';
-import {whichSet, whichYear, subtotalKeys} from './Visualizer.js'; //**
 
-let cardWidth, countryData, selectedSet, selectedYear, selectedKeys; //**
-
-cardWidth = 400; // how can i access the cardWidth? self.getBoundingClientRect().width?
+const cardWidth = 400; // how can i access the cardWidth? self.getBoundingClientRect().width?
 
 
 class Card extends Component {
+
   render() {
-    let self=this;
-    function getCountryData() {  //**
-      countryData = csvData.find(item => item.id === self.props.id);
-      selectedSet = whichSet;
-      selectedYear = whichYear;
-      selectedKeys = subtotalKeys;
-    }
-    getCountryData();
+
+    const self = this;
+    const { countryImmigrationData, selectedCategories } = this.props
+
     function xPlacement(left,right,width) { //only handles left side issues  //can I get D3 box parameters from somewhere using refs?
       if (left < cardWidth+17) { //if outside box on left
         return right+25;  //return left of D3box?
@@ -35,72 +28,81 @@ class Card extends Component {
     }
 
     return(
-      <div className='card-holder' style={{top: yPlacement(this.props.yTop,this.props.yBottom,this.props.yHeight), left: xPlacement(this.props.xLeft,this.props.xRight,this.props.xWidth)}}>
-        {!countryData.immigrationData ?
+      <div className='card-holder'
+        style={{top: yPlacement(this.props.yTop,this.props.yBottom,this.props.yHeight),
+          left: xPlacement(this.props.xLeft,this.props.xRight,this.props.xWidth)}}>
+        {Object.keys(countryImmigrationData).length === 0 ?
             <div className='card-nodata'>No data provided.</div>
           :
           <div>
             <div className='card-head'>
               <div className='card-flag'>
-                <img src={countryData.immigrationData.href} alt=""></img>
+                <img src={countryImmigrationData.href} alt=""></img>
               </div>
               <div className='card-title'>
-                <p><b>{countryData.immigrationData.countryName}</b></p>
-                <p>{selectedYear} Selected {selectedSet} Total: <b>
-                  {selectedSet === "LPR" ?
-                      selectedKeys.length === 6 ? countryData.immigrationData.total.toLocaleString()
-                      : countryData.immigrationData.selectedTotal.toLocaleString()
-                    : selectedKeys.length === 5 ? countryData.immigrationData.total.toLocaleString()
-                    : countryData.immigrationData.selectedTotal.toLocaleString()}</b></p>
+                <p><b>{countryImmigrationData.countryName}</b></p>
+                <p>{this.props.dataYear} Selected {this.props.radioDataset} Total: <b>
+                  {this.props.radioDataset === "LPR" ?
+                      selectedCategories.length === 6 ? countryImmigrationData.total.toLocaleString()
+                      : countryImmigrationData.countrySelectedTotal.toLocaleString()
+                    : selectedCategories.length === 5 ? countryImmigrationData.total.toLocaleString()
+                    : countryImmigrationData.countrySelectedTotal.toLocaleString()}</b></p>
               </div>
             </div>
             <div className='card-data lpr-card-data'
-                 style={{display: selectedSet === "LPR" ? 'block' : 'none'}}>
-                 {selectedSet === "LPR" ?
+                 style={{display: this.props.radioDataset === "LPR" ? 'block' : 'none'}}>
+                 {this.props.radioDataset === "LPR" ?
                    <div>
-                    <p style={{fontWeight: selectedKeys.indexOf('immediateRelative') !== -1 ? 'bold' : 'normal'}}
-                      >Immediate Relative: {isNaN(countryData.immigrationData.immediateRelative) ? 'dw' : countryData.immigrationData.immediateRelative.toLocaleString()}</p>
-                    <p style={{fontWeight: selectedKeys.indexOf('familySponsored') !== -1 ? 'bold' : 'normal'}}
-                      >Family-Sponsored: {isNaN(countryData.immigrationData.familySponsored) ? 'dw' : countryData.immigrationData.familySponsored.toLocaleString()}</p>
-                    <p style={{fontWeight: selectedKeys.indexOf('refugeeAsylee') !== -1 ? 'bold' : 'normal'}}
-                      >Refugee & Asylee: {isNaN(countryData.immigrationData.refugeeAsylee) ? 'dw' : countryData.immigrationData.refugeeAsylee.toLocaleString()}</p>
-                    <p style={{fontWeight: selectedKeys.indexOf('employmentBased') !== -1 ? 'bold' : 'normal'}}
-                      >Employment-Based: {isNaN(countryData.immigrationData.employmentBased) ? 'dw' : countryData.immigrationData.employmentBased.toLocaleString()}</p>
-                    <p style={{fontWeight: selectedKeys.indexOf('diversityLottery') !== -1 ? 'bold' : 'normal'}}
-                      >Diversity Lottery: {isNaN(countryData.immigrationData.diversityLottery) ? 'dw' : countryData.immigrationData.diversityLottery.toLocaleString()}</p>
-                    <p style={{fontWeight: selectedKeys.indexOf('otherLPR') !== -1 ? 'bold' : 'normal'}}
-                      >Other: {isNaN(countryData.immigrationData.otherLPR) ? 'dw' : countryData.immigrationData.otherLPR.toLocaleString()}</p>
+                    <p className={this.embolden('immediateRelative')}
+                      >Immediate Relative: {this.formatNumber(countryImmigrationData.immediateRelative)}</p>
+                    <p className={this.embolden('familySponsored')}
+                      >Family-Sponsored: {this.formatNumber(countryImmigrationData.familySponsored)}</p>
+                    <p className={this.embolden('refugeeAsylee')}
+                      >Refugee & Asylee: {this.formatNumber(countryImmigrationData.refugeeAsylee)}</p>
+                    <p className={this.embolden('employmentBased')}
+                      >Employment-Based: {this.formatNumber(countryImmigrationData.employmentBased)}</p>
+                    <p className={this.embolden('diversityLottery')}
+                      >Diversity Lottery: {this.formatNumber(countryImmigrationData.diversityLottery)}</p>
+                    <p className={this.embolden('otherLPR')}
+                      >Other: {this.formatNumber(countryImmigrationData.otherLPR)}</p>
                   </div>: <div></div>}
             </div>
             <div className='card-data ni-card-data'
-                 style={{display: selectedSet === "NI" ? 'block' : 'none'}}>
-                 {selectedSet === "NI" ?
+                 style={{display: this.props.radioDataset === "NI" ? 'block' : 'none'}}>
+                 {this.props.radioDataset === "NI" ?
                   <div>
-                   <p style={{fontWeight: selectedKeys.indexOf('temporaryVisitor') !== -1 ? 'bold' : 'normal'}}
-                     >Temporary Visitor: {isNaN(countryData.immigrationData.temporaryVisitor) ? 'dw' : countryData.immigrationData.temporaryVisitor.toLocaleString()}</p>
-                   <p style={{fontWeight: selectedKeys.indexOf('temporaryWorker') !== -1 ? 'bold' : 'normal'}}
-                     >Temporary Worker: {isNaN(countryData.immigrationData.temporaryWorker) ? 'dw' : countryData.immigrationData.temporaryWorker.toLocaleString()}</p>
-                   <p style={{fontWeight: selectedKeys.indexOf('studentExchange') !== -1 ? 'bold' : 'normal'}}
-                     >Student & Exchange: {isNaN(countryData.immigrationData.studentExchange) ? 'dw' : countryData.immigrationData.studentExchange.toLocaleString()}</p>
-                   <p style={{fontWeight: selectedKeys.indexOf('diplomatRep') !== -1 ? 'bold' : 'normal'}}
-                     >Diplomat & Representative: {isNaN(countryData.immigrationData.diplomatRep) ? 'dw' : countryData.immigrationData.diplomatRep.toLocaleString()}</p>
-                   <p style={{fontWeight: selectedKeys.indexOf('otherNI') !== -1 ? 'bold' : 'normal'}}
-                     >Other: {isNaN(countryData.immigrationData.otherNI) ? 'dw' : countryData.immigrationData.otherNI.toLocaleString()}</p>
+                   <p className={this.embolden('temporaryVisitor')}
+                     >Temporary Visitor: {this.formatNumber(countryImmigrationData.temporaryVisitor)}</p>
+                   <p className={this.embolden('temporaryWorker')}
+                     >Temporary Worker: {this.formatNumber(countryImmigrationData.temporaryWorker)}</p>
+                   <p className={this.embolden('studentExchange')}
+                     >Student & Exchange: {this.formatNumber(countryImmigrationData.studentExchange)}</p>
+                   <p className={this.embolden('diplomatRep')}
+                     >Diplomat & Representative: {this.formatNumber(countryImmigrationData.diplomatRep)}</p>
+                   <p className={this.embolden('otherNI')}
+                     >Other: {this.formatNumber(countryImmigrationData.otherNI)}</p>
                   </div>: <div></div>}
             </div>
-          <div className='card-notes'
-               style={{display: countryData.immigrationData.countryNote === "" ? 'none' : 'block'}}>
-            <p>Note: {countryData.immigrationData.countryNote}</p>
-          </div>
+          {countryImmigrationData.countryNote && <div className='card-notes'>
+            <p>Note: {countryImmigrationData.countryNote}</p>
+          </div>}
         </div>
 
         }
       </div>
     )
-
   }
+
+  formatNumber(value) {
+    return isNaN(value) ? 'dw' : value.toLocaleString()
+  }
+
+  embolden(value) {
+    if(this.props.selectedCategories.indexOf(value) !== -1) {
+      return 'counted-category';
+    } else return '';
+  }
+
 }
-
-
 
 export default Card;

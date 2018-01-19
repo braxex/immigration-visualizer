@@ -3,17 +3,11 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import {initialFill, fillChoropleth} from './formulas.js';
-import {flags} from './flags.js';
+import {loadData, lprScale, niScale} from './App.js';
 
 //Variable Declarations
-let svg, g, geoPath, projection, sumSelected;
+let svg, g, geoPath, projection;
 let width, height = 0;
-let immigrationData = {};
-export let csvData;
-export let subtotalKeys = ['immediateRelative','familySponsored','employmentBased','refugeeAsylee','diversityLottery','otherLPR']; //**
-export let whichSet;
-export let whichYear;
 
 class Visualizer extends Component {
 
@@ -21,117 +15,32 @@ class Visualizer extends Component {
     return false;
   }
 
-  componentDidMount() {
-    const self = this;
-    loadData();
-    csvData = immigrationData[(this.props.radioDataset).toLowerCase()+this.props.dataYear];
-    readData(csvData);
-    calcSelectedTotal(csvData);
-    initialFill(g,geoPath,'LPR',sumSelected,csvData,self.props.saveAppState,self.props.map);
-  }
+  componentWillReceiveProps(nextProps) {
 
-  componentWillReceiveProps(nextProps,svg,g,geoPath) {
-    //determine which data to display
-    csvData = immigrationData[(nextProps.radioDataset).toLowerCase()+nextProps.dataYear];
+    const {map, selectedDataset, radioDataset, dataYear, selectedCategories, modal} = nextProps;
 
-    whichYear = nextProps.dataYear; //** passes to Card.js
-    whichSet = nextProps.radioDataset; //**passes to Card.js
+    if (this.props.map !== map && this.props.map === null) {
+      initializeD3(map);
+    }
 
-    getSubtotalKeys(nextProps);
-    readData(csvData);
-    calcSelectedTotal(csvData);
+    if (this.props.selectedDataset !== selectedDataset && this.props.selectedDataset === null) {
+      setInitialFillAndBindings(g, geoPath, selectedDataset, nextProps.saveAppState); //g, geoPath,selectedDataset, saveState
+    }
 
-    //restyle choropleth paths
-    d3.select('#d3-mount-point').selectAll('path')
-      .data(csvData)
-      .attr('fill', function(d) {return fillChoropleth(d, nextProps.radioDataset,sumSelected)})
+    if (!modal && selectedDataset) {
+      readData(selectedDataset, selectedCategories);
+
+      //restyle choropleth paths
+      d3.select('#d3-mount-point').selectAll('path')
+        .data(selectedDataset)
+        .attr('fill', (d) => fillChoropleth(d, radioDataset, calcWorldSelectedTotal(selectedDataset)))
+    }
   }
 
   render() {
     return (
       <div id="d3-mount-point" ref={(elem) => { this.div = elem; }} />
     );
-  }
-}
-
-function loadData() {
-  const self = this;
-  const immigrationData = {};
-
-  d3.json('./map_geo.json', (err,map) => {
-    if (err) {
-      console.log(err)
-    } else {
-        const combinerProgress = {
-          filesLeft: (self.props.yearBounds[1] - self.props.yearBounds[0])*2
-        };
-
-        this.setState({map})
-        initializeD3(map);
-
-        for (let i=self.props.yearBounds[0]; i <= self.props.yearBounds[1]; i++) {
-          immigrationData['lpr' + i] = makeMyData(i, 'lpr', combinerProgress, map);
-          immigrationData['ni' + i] = makeMyData(i, 'ni', combinerProgress, map);
-        }
-      }
-  });
-
-  function makeMyData(year, radioset, combinerProgress, map) {
-    /*loads new dataset and prepares for manipulation*/
-    d3.csv(("./"+radioset+year+".csv"), function(err, csvData) {
-      if (err) {
-        console.log(err)
-      } else {
-        combinator(map,csvData,flags,year,radioset);
-        combinerProgress.filesLeft -= 1;
-        if (combinerProgress.filesLeft === 0) {
-          self.setState({immigrationData});
-        }
-      }
-    });
-  }
-
-  function combinator(world, dataset, flags, year, radioset) {
-    if (radioset === 'lpr') {
-      dataset.forEach(function(d) {
-        d.immediateRelative = +d.immediateRelative;
-        d.familySponsored = +d.familySponsored;
-        d.employmentBased = +d.employmentBased;
-        d.refugeeAsylee = +d.refugeeAsylee;
-        d.diversityLottery = +d.diversityLottery;
-        d.adoptedOrphans = +d.adoptedOrphans;
-        d.otherLPR = +d.otherLPR;
-        d.total = +d.total;
-      })
-    }
-    if (radioset === 'ni') {
-      dataset.forEach(function(d) {
-        d.temporaryVisitor = +d.temporaryVisitor;
-        d.studentExchange = +d.studentExchange;
-        d.temporaryWorker = +d.temporaryWorker;
-        d.diplomatRep = +d.diplomatRep;
-        d.otherNI = +d.otherNI;
-        d.total = +d.total;
-      })
-    }
-    let dataFlags = dataset.map(data => ({...data, href: flags.find(
-      flag => flag[0] === data.ISO)[2]  }))
-    immigrationData[radioset+year] = world.features.map(f => ({
-      type: 'Feature',
-      id: f.properties.iso_a3,
-      name: f.properties.name_long,
-      formalName: f.properties.formal_en,
-      population: f.properties.pop_est,
-      geometry: f.geometry,
-      immigrationData: dataFlags.find(dataFlag =>
-        dataFlag.ISO === f.properties.iso_a3)
-    })
-  )/*.filter(x => x.immigrationData !== undefined)*/
-    .sort((a,b) => {
-      if (a.name < b.name) return -1;
-      if (a.name > b.name) return 1;
-      return 0;
-    });
   }
 }
 
@@ -164,27 +73,22 @@ function initializeD3(worldMap) {
     .projection(projection);
 }
 
-function getSubtotalKeys(nextProps) {
-  subtotalKeys = Object.keys(nextProps[nextProps.radioDataset])
-    .filter(key => nextProps[nextProps.radioDataset][key].checkedStatus === true);
-}
-
-function readData(data) {
+function readData(data, selectedCategories) {
   data.forEach(function(country) {
     if (country.immigrationData !== undefined) {
       let countedImmigrants = null;
-      if (subtotalKeys.length === 0) {
+      if (selectedCategories.length === 0) {
         countedImmigrants = 0;
       }
-      else if (subtotalKeys.length === 1) {
-        countedImmigrants = parseNumberForTotal(country.immigrationData[subtotalKeys[0]]);
+      else if (selectedCategories.length === 1) {
+        countedImmigrants = parseNumberForTotal(country.immigrationData[selectedCategories[0]]);
       }
       else {
-        countedImmigrants = subtotalKeys.reduce(function(acc, subtotalKey) {
-          return acc + parseNumberForTotal(country.immigrationData[subtotalKey]);
+        countedImmigrants = selectedCategories.reduce(function(acc, category) {
+          return acc + parseNumberForTotal(country.immigrationData[category]);
         }, 0)
       }
-      Object.assign(country.immigrationData, {selectedTotal:countedImmigrants});
+      Object.assign(country.immigrationData, {countrySelectedTotal:countedImmigrants});
     }
   })
 }
@@ -202,13 +106,56 @@ function parseNumberForTotal(value) {
   }
 }
 
-function calcSelectedTotal(data) {
-  sumSelected = data.reduce(function(acc, country) {
+function calcWorldSelectedTotal(data) {
+  return data.reduce(function(acc, country) {
     if (country.immigrationData !== undefined) {
-      return acc + parseInt(country.immigrationData.selectedTotal,10);
+      return acc + parseInt(country.immigrationData.countrySelectedTotal,10);
     }
     else { return acc; }
   }, 0)
+}
+
+function setInitialFillAndBindings(g, geoPath,selectedDataset, saveState) {
+  g.selectAll('path')
+    .data(selectedDataset)
+    .enter()
+    .append('path')
+    .attr('fill','gray')
+    .attr('stroke','#333').attr('stroke-width','.015')
+    .attr('d',geoPath)
+    .on('mouseover', function(d) {handleMouseover(d, saveState, this)})
+    .on('mouseout', function(d) {handleMouseout(d, saveState, this)})
+}
+
+function handleMouseover(d, saveState, countryDOM) {
+  const elementBox = countryDOM.getBoundingClientRect();
+  console.log(elementBox);
+  saveState({hoverCountry: {
+    id: d.id,
+    xLeft: elementBox.left,
+    yTop: elementBox.top,
+    xRight: elementBox.right,
+    yBottom: elementBox.bottom,
+    xWidth: elementBox.width,
+    yHeight: elementBox.height,
+  }});
+}
+
+function handleMouseout(d, saveState, countryDOM) {
+  saveState({hoverCountry: null});
+}
+
+function fillChoropleth(d,radioDataset,worldSelectedTotal) {
+    if (d.immigrationData === undefined) {
+      return '#dddddd'
+    } else {
+      if (radioDataset === 'LPR') {
+        return lprScale((d.immigrationData.countrySelectedTotal/worldSelectedTotal)*100)
+      }
+        else if (radioDataset === 'NI') {
+          return niScale((d.immigrationData.countrySelectedTotal/worldSelectedTotal)*100)
+      }
+    }
 }
 
 window.addEventListener('resize',function() {

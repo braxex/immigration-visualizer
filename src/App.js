@@ -7,6 +7,7 @@ import * as d3 from 'd3';
 import * as d3sc from 'd3-scale-chromatic';
 import { Tooltip } from 'react-tippy';
 import Visualizer from './Visualizer.js';
+import {flags} from './flags.js';
 import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
 import {lprStatics, niStatics, noteStatics} from './Statics.js';
 import Legend from './Legend.js';
@@ -21,7 +22,7 @@ export let niScale = d3.scaleThreshold()
                 .domain([0.01,0.1,0.25,.5,1,2.5,5])
                 .range(d3sc.schemeYlGnBu[9].slice(1));
 export let map;
-let immigrationData = {};
+let yearBounds = [2005,2016];
 
 
 class App extends Component {
@@ -37,6 +38,8 @@ class App extends Component {
       dataYear: this.props.yearBounds[0],
       isPlaying: false,
       hoverCountry: null,
+      map: null,
+      immigrationData: null,
       modal: true, //set to true before prod
     };
     this.props.lprItems.forEach(function(item) {
@@ -48,9 +51,27 @@ class App extends Component {
     this.state = initialState;
   }
 
+  componentDidMount() {
+    this.loadData();
+  }
+
   render() {
-    let colors = (this.state.radioDataset === 'LPR') ? this.props.lprColors : this.props.niColors;
-    let thresholds = (this.state.radioDataset === 'LPR') ? this.props.lprThresholds : this.props.niThresholds;
+    const selectedCategories = this.getSelectedCategories();
+    const selectedDataset = (
+      this.state.immigrationData &&
+      this.state.immigrationData[(this.state.radioDataset).toLowerCase()+this.state.dataYear]
+    );
+    let countryImmigrationData = selectedDataset && selectedDataset.find(item => {
+      
+      return item.id === (this.state.hoverCountry && this.state.hoverCountry.id)})
+      if (countryImmigrationData) {
+        countryImmigrationData = countryImmigrationData.immigrationData || {};
+      } else {
+          countryImmigrationData = {};
+      }
+    const colors = (this.state.radioDataset === 'LPR') ? this.props.lprColors : this.props.niColors;
+    const thresholds = (this.state.radioDataset === 'LPR') ? this.props.lprThresholds : this.props.niThresholds;
+
     return (
 
       <div className="App">
@@ -61,18 +82,29 @@ class App extends Component {
         </header>
 
         {/*Modal Section*/}
-        <div className='modal-manager' style={{display: this.state.modal ? 'block' : 'none'}}
-          onClick={() => {
-            this.hideModal();
-          }}>
+        <div className='modal-manager'
+             style={{display: this.state.modal ? 'block' : 'none'}}
+             onClick={() => {
+               this.hideModal();
+             }}>
           <Modal />
         </div>
 
         {/*D3 Visualization Section*/}
-        <div id="D3-holder" className="D3-holder" ref={(div) => { this.D3box = div; }}>
-          <Visualizer {...this.state} saveAppState={this.setState.bind(this)}/>
+        <div id="D3-holder"
+          className="D3-holder"
+          ref={(div) => { this.D3box = div; }}>
+          <Visualizer {...this.state}
+                      {...this.defaultProps}
+                      saveAppState={this.setState.bind(this)}
+                      selectedCategories={selectedCategories}
+                      selectedDataset={selectedDataset}/>
         </div>
-        {this.state.hoverCountry && <Card {...this.state.hoverCountry}/>}
+        {this.state.hoverCountry && <Card
+          radioDataset= {this.state.radioDataset}
+          dataYear= {this.state.dataYear} {...this.state.hoverCountry}
+          countryImmigrationData={countryImmigrationData}
+          selectedCategories={selectedCategories}/>}
 
         <div id="legend-holder" className="legend-holder">
           <Legend colors={colors} thresholds={thresholds}/>
@@ -232,18 +264,102 @@ class App extends Component {
       }
     }
   }
+
+  getSelectedCategories() {
+    const self = this;
+    return Object.keys(self.state[self.state.radioDataset])
+      .filter(key => self.state[self.state.radioDataset][key].checkedStatus === true);
+  }
+
+  loadData() {
+    const self = this;
+    const immigrationData = {};
+
+    d3.json('./map_geo.json', (err,map) => {
+      if (err) {
+        console.log(err)
+      } else {
+          const combinerProgress = {
+            filesLeft: (yearBounds[1] - yearBounds[0])*2
+          };
+          this.setState({map})
+
+          for (let i=yearBounds[0]; i <= yearBounds[1]; i++) {
+            immigrationData['lpr' + i] = makeMyData(i, 'lpr', combinerProgress, map);
+            immigrationData['ni' + i] = makeMyData(i, 'ni', combinerProgress, map);
+          }
+        }
+    });
+
+    function makeMyData(year, radioset, combinerProgress, map) {
+      /*loads new dataset and prepares for manipulation*/
+      d3.csv(("./"+radioset+year+".csv"), function(err, csvData) {
+        if (err) {
+          console.log(err)
+        } else {
+          combinator(map,csvData,flags,year,radioset);
+          combinerProgress.filesLeft -= 1;
+          if (combinerProgress.filesLeft === 0) {
+            self.setState({immigrationData});
+          }
+        }
+      });
+    }
+
+    function combinator(world, dataset, flags, year, radioset) {
+      if (radioset === 'lpr') {
+        dataset.forEach(function(d) {
+          d.immediateRelative = +d.immediateRelative;
+          d.familySponsored = +d.familySponsored;
+          d.employmentBased = +d.employmentBased;
+          d.refugeeAsylee = +d.refugeeAsylee;
+          d.diversityLottery = +d.diversityLottery;
+          d.adoptedOrphans = +d.adoptedOrphans;
+          d.otherLPR = +d.otherLPR;
+          d.total = +d.total;
+        })
+      }
+      if (radioset === 'ni') {
+        dataset.forEach(function(d) {
+          d.temporaryVisitor = +d.temporaryVisitor;
+          d.studentExchange = +d.studentExchange;
+          d.temporaryWorker = +d.temporaryWorker;
+          d.diplomatRep = +d.diplomatRep;
+          d.otherNI = +d.otherNI;
+          d.total = +d.total;
+        })
+      }
+      let dataFlags = dataset.map(data => ({...data, href: flags.find(
+        flag => flag[0] === data.ISO)[2]  }))
+      immigrationData[radioset+year] = world.features.map(f => ({
+        type: 'Feature',
+        id: f.properties.iso_a3,
+        name: f.properties.name_long,
+        formalName: f.properties.formal_en,
+        population: f.properties.pop_est,
+        geometry: f.geometry,
+        immigrationData: dataFlags.find(dataFlag =>
+          dataFlag.ISO === f.properties.iso_a3)
+      })
+    )
+      .sort((a,b) => {
+        if (a.name < b.name) return -1;
+        if (a.name > b.name) return 1;
+        return 0;
+      });
+    }
+  }
 }
 
 App.defaultProps = {
   lprItems: lprStatics,
   niItems: niStatics,
   noteItems: noteStatics,
-  yearBounds: [2005,2016],
+  yearBounds: yearBounds,
   lprThresholds: lprScale.domain(),
   lprColors: lprScale.range(),
   niThresholds: niScale.domain(),
   niColors: niScale.range(),
-  immigrationData
 }
 
 export default App;
