@@ -62,7 +62,7 @@ class App extends Component {
       this.state.immigrationData[(this.state.radioDataset).toLowerCase()+this.state.dataYear]
     );
     let countryImmigrationData = selectedDataset && selectedDataset.find(item => {
-      
+
       return item.id === (this.state.hoverCountry && this.state.hoverCountry.id)})
       if (countryImmigrationData) {
         countryImmigrationData = countryImmigrationData.immigrationData || {};
@@ -201,21 +201,21 @@ class App extends Component {
   }
 
   changeLPRCheckboxState(shouldBeChecked,checkboxName) {
-    const newState = merge({},this.state,{
-      LPR: {
-        [checkboxName]: {checkedStatus: shouldBeChecked}
-      }
+    const newState = merge({},this.state.LPR,{
+      [checkboxName]: {checkedStatus: shouldBeChecked}
     })
-    this.setState.bind(this)(newState)
+    this.setState.bind(this)({
+      LPR: newState
+    })
   }
 
   changeNICheckboxState(shouldBeChecked,checkboxName) {
-    const newState = merge({},this.state,{
-      NI: {
-        [checkboxName]: {checkedStatus: shouldBeChecked}
-      }
+    const newState = merge({},this.state.NI,{
+      [checkboxName]: {checkedStatus: shouldBeChecked}
     })
-    this.setState.bind(this)(newState)
+    this.setState.bind(this)({
+      NI: newState
+    })
   }
 
   changeRadioDataset(radioValue) {

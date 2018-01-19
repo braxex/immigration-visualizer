@@ -4,12 +4,9 @@ import './Card.css';
 
 const cardWidth = 400; // how can i access the cardWidth? self.getBoundingClientRect().width?
 
-
 class Card extends Component {
 
   render() {
-
-    const self = this;
     const { countryImmigrationData, selectedCategories } = this.props
 
     function xPlacement(left,right,width) { //only handles left side issues  //can I get D3 box parameters from somewhere using refs?

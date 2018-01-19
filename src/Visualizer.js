@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
-import {loadData, lprScale, niScale} from './App.js';
+import {lprScale, niScale} from './App.js';
 
 //Variable Declarations
 let svg, g, geoPath, projection;
@@ -17,7 +17,7 @@ class Visualizer extends Component {
 
   componentWillReceiveProps(nextProps) {
 
-    const {map, selectedDataset, radioDataset, dataYear, selectedCategories, modal} = nextProps;
+    const {map, selectedDataset, radioDataset, selectedCategories, modal} = nextProps;
 
     if (this.props.map !== map && this.props.map === null) {
       initializeD3(map);
