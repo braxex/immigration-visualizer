@@ -15,6 +15,25 @@ class Visualizer extends Component {
     return false;
   }
 
+  componentDidMount() {
+    window.addEventListener('resize', this.setAndSaveMapBox.bind(this));
+    this.setAndSaveMapBox();
+  }
+
+  setAndSaveMapBox() {
+    const d3Holder = document.getElementById('D3-holder');
+    const newMapWidth = d3Holder.offsetWidth -2;
+    const newMapHeight = d3Holder.offsetHeight -2;
+    const newMapBox = d3Holder.getBoundingClientRect();
+
+    d3.select('#immigration-svg').attr('width', newMapWidth);
+    d3.select('#immigration-svg').attr('height', newMapHeight);
+
+    this.props.saveAppState({
+      mapBox: newMapBox,
+    });
+  }
+
   componentWillReceiveProps(nextProps) {
     const {map, selectedDataset, radioDataset, selectedCategories, modal} = nextProps;
 
@@ -38,7 +57,7 @@ class Visualizer extends Component {
 
   render() {
     return (
-      <div id="d3-mount-point" ref={(elem) => { this.div = elem; }} />
+      <div id="d3-mount-point" ref={(elem) => { this.d3box = elem; }} />
     );
   }
 }
@@ -128,7 +147,7 @@ function setInitialFillAndBindings(g, geoPath,selectedDataset, saveState) {
 
 function handleMouseover(d, saveState, countryDOM) {
   const elementBox = countryDOM.getBoundingClientRect();
-  console.log(elementBox);  //^ remove before prod
+  console.log('country box',d.id, elementBox);  //^ remove before prod
   saveState({hoverCountry: {
     id: d.id,
     xLeft: elementBox.left,
@@ -156,10 +175,5 @@ function fillChoropleth(d,radioDataset,worldSelectedTotal) {
       }
     }
 }
-
-window.addEventListener('resize',function() {
-  d3.select('#immigration-svg').attr('width', document.getElementById('D3-holder').offsetWidth-2);
-  d3.select('#immigration-svg').attr('height', document.getElementById('D3-holder').offsetHeight-2);
-})
 
 export default Visualizer;

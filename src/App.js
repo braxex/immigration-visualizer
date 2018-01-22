@@ -40,6 +40,7 @@ class App extends Component {
       isPlaying: false,
       hoverCountry: null,
       map: null,
+      mapBox: null,
       datums: null,
       modal: true, //set to true before prod
     };
@@ -74,6 +75,7 @@ class App extends Component {
                     this.props.lprColors : this.props.niColors;
     const thresholds = (this.state.radioDataset === 'LPR') ?
                         this.props.lprThresholds : this.props.niThresholds;
+    const mapBox = this.state.mapBox;
 
     return (
 
@@ -96,7 +98,7 @@ class App extends Component {
         {/*D3 Visualization Section*/}
         <div id="D3-holder"
           className="D3-holder"
-          ref={(div) => { this.D3box = div; }}>
+          ref='D3box'>
           <Visualizer
             {...this.state}
             {...this.defaultProps}
@@ -104,13 +106,14 @@ class App extends Component {
             selectedCategories={selectedCategories}
             selectedDataset={selectedDataset}/>
         </div>
-
         {/*Card Section*/}
         {this.state.hoverCountry && <Card
           radioDataset= {this.state.radioDataset}
           dataYear= {this.state.dataYear} {...this.state.hoverCountry}
           countryImmigrationData={countryImmigrationData}
-          selectedCategories={selectedCategories}/>}
+          selectedCategories={selectedCategories}
+          mapBox={mapBox}/>
+          }
 
         {/*Legend & Year Display Section*/}
         <div id="legend-holder" className="legend-holder">
