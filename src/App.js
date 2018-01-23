@@ -42,7 +42,7 @@ class App extends Component {
       map: null,
       mapBox: null,
       datums: null,
-      modal: true, 
+      modal: true,
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: true};
@@ -128,6 +128,7 @@ class App extends Component {
             position='bottom'
             trigger='mouseenter'
             animation='shift'
+            interactive='true'
             hideOnClick={true}>
             Data: US Department of Homeland Security, {this.state.dataYear}
           </Tooltip>
