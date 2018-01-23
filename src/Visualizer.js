@@ -41,12 +41,10 @@ class Visualizer extends Component {
       initializeD3(map);
     }
 
-    //to run once when data is available
     if (this.props.selectedDataset !== selectedDataset && this.props.selectedDataset === null) {
       setInitialFillAndBindings(g, geoPath, selectedDataset, nextProps.saveAppState);
     }
 
-    //to run each time after initial data is available
     if (!modal && selectedDataset) {
       readData(selectedDataset, selectedCategories);
       d3.select('#d3-mount-point').selectAll('path')
@@ -63,7 +61,6 @@ class Visualizer extends Component {
 }
 
 function initializeD3(worldMap) {
-  //create d3 map container
   const reactContainer = document.getElementById('D3-holder');
   width = reactContainer.offsetWidth-2;
   height = reactContainer.offsetHeight-2;
@@ -73,7 +70,7 @@ function initializeD3(worldMap) {
     .attr('height', height)
     .attr('max-height','90%')
     .attr('width', width)
-    .call(d3.zoom() //zoom functionality
+    .call(d3.zoom()
       .scaleExtent([1,12])
       .on('zoom',function() {
       svg.attr('transform',d3.event.transform)
@@ -147,7 +144,6 @@ function setInitialFillAndBindings(g, geoPath,selectedDataset, saveState) {
 
 function handleMouseover(d, saveState, countryDOM) {
   const elementBox = countryDOM.getBoundingClientRect();
-  console.log('country box',d.id, elementBox);  //^ remove before prod
   saveState({hoverCountry: {
     id: d.id,
     xLeft: elementBox.left,

@@ -42,7 +42,7 @@ class App extends Component {
       map: null,
       mapBox: null,
       datums: null,
-      modal: true, //set to true before prod
+      modal: true, 
     };
     this.props.lprItems.forEach(function(item) {
       initialState.LPR[item.name] = {checkedStatus: true};
@@ -376,7 +376,7 @@ class App extends Component {
         formalName: f.properties.formal_en,
         population: f.properties.pop_est,
         geometry: f.geometry,
-        immigrationData: dataFlags.find(dataFlag => //** maybe change?
+        immigrationData: dataFlags.find(dataFlag =>
           dataFlag.ISO === f.properties.iso_a3)
       })
     )

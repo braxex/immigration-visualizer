@@ -2,70 +2,16 @@
 import React, { Component } from 'react';
 import './Card.css';
 
-let cardBox = {
-  x: null,
-  y: null,
-  width: getWidth(),  //**makes first run place card correctly
-  height: null,
-  top: null,
-  right: null,
-  bottom: null,
-  left: null,
-}
-
-let pastCardBox;
-
-function getWidth () {  //**makes first run place card correctly
-  if ((window.innerWidth/2)>=400) {
-    return 400;
-  } else if ((window.innerWidth/2)<=100) {
-    return 100;
-  } else return (window.innerWidth/2)
-}
 
 class Card extends Component {
 
   render() {
 
-    const { countryImmigrationData, selectedCategories, mapBox } = this.props;
-    console.log('map box',mapBox);  //mapBox.__
-    console.log('past card box',pastCardBox);
-    console.log('card box',cardBox); //cardBox.__
-
-    function xPlacement(countryLeft,countryRight,countryWidth) {
-      if (!cardBox.x) { return mapBox.left } //**temporary rule
-
-      //REAL RULES
-      if (countryLeft-mapBox.left>cardBox.width+25) {
-        return countryLeft-(cardBox.width+25)
-      } else if (countryLeft-mapBox.left<cardBox.width+25) {
-          if (mapBox.right-countryRight>cardBox.width) {
-            return countryRight+25
-          } else return mapBox.left
-      }
-    }
-
-    function yPlacement(countryTop,countryBottom,countryHeight) {
-      if (!cardBox.x) { return mapBox.y } //**temporary rule
-
-      //REAL RULES
-      if (countryTop > mapBox.top) { //if country is below mapbox put it at country height
-        if (countryTop + cardBox.height > mapBox.bottom) { //and if country is too close to the bottom
-          return mapBox.bottom-cardBox.height
-        } else return countryTop
-      } else if (countryTop < mapBox.top) { //if country is above mapbox put it at mapbox top
-        if (countryTop + cardBox.height > mapBox.bottom) { //and if country is too close to the bottom
-          return mapBox.bottom-cardBox.height
-          }
-        return mapBox.top
-      }
-    }
+    const { countryImmigrationData, selectedCategories } = this.props;
 
     return(
       <div className='card-holder'
-        ref={ref => this.card = ref}
-        style={{top: yPlacement(this.props.yTop,this.props.yBottom,this.props.yHeight),
-          left: xPlacement(this.props.xLeft,this.props.xRight,this.props.xWidth)}}>
+        ref={ref => this.card = ref}>
         {Object.keys(countryImmigrationData).length === 0 ?
             <div className='card-nodata'>No data provided.</div>
           :
@@ -151,9 +97,36 @@ class Card extends Component {
     } else return '';
   }
 
+  xPlacement(countryLeft,countryRight,countryWidth, mapBox, cardBox) {
+    if (countryLeft-mapBox.left>cardBox.width+25) {
+      return countryLeft-(cardBox.width+25)
+    } else if (countryLeft-mapBox.left<cardBox.width+25) {
+        if (mapBox.right-countryRight>cardBox.width) {
+          return countryRight+25
+        } else return mapBox.left
+    }
+  }
+
+  yPlacement(countryTop,countryBottom,countryHeight, mapBox, cardBox) {
+    if (countryTop > mapBox.top) {
+      if (countryTop + cardBox.height > mapBox.bottom) {
+        return mapBox.bottom-cardBox.height
+      } else return countryTop
+    } else if (countryTop < mapBox.top) {
+      if (countryTop + cardBox.height > mapBox.bottom) {
+        return mapBox.bottom-cardBox.height
+        }
+      return mapBox.top
+    }
+  }
+
   componentDidMount(previousProps, previousState) {
-    pastCardBox = cardBox;
-    cardBox = this.card.getBoundingClientRect();
+    const cardBox = this.card.getBoundingClientRect();
+    const top = this.yPlacement(this.props.yTop,this.props.yBottom,this.props.yHeight,this.props.mapBox,cardBox);
+    const left = this.xPlacement(this.props.xLeft,this.props.xRight,this.props.xWidth,this.props.mapBox,cardBox);
+
+    this.card.style.left = left + 'px';
+    this.card.style.top = top + 'px';
   }
 
 }
