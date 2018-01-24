@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import './Legend.css';
+import './legend.min.css';
 
 let width = 30;
 

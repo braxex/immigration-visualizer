@@ -10,7 +10,7 @@ import { Tooltip } from 'react-tippy';
 import Visualizer from './Visualizer.js';
 import Legend from './Legend.js';
 import Card from './Card.js';
-import {flags} from './Flags.js';
+import {flags} from './Flagfile.js';
 import {LPRCheckbox, NICheckbox, Modal} from './Reusables.js';
 import {lprStatics, niStatics, noteStatics} from './Statics.js';
 

@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import './Visualizer.css';
+import './Visualizer.min.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
 import {lprScale, niScale} from './App.js';
@@ -22,8 +22,8 @@ class Visualizer extends Component {
 
   setAndSaveMapBox() {
     const d3Holder = document.getElementById('D3-holder');
-    const newMapWidth = d3Holder.offsetWidth -2;
-    const newMapHeight = d3Holder.offsetHeight -2;
+    const newMapWidth = d3Holder.offsetWidth -1;
+    const newMapHeight = d3Holder.offsetHeight -1;
     const newMapBox = d3Holder.getBoundingClientRect();
 
     d3.select('#immigration-svg').attr('width', newMapWidth);
@@ -62,7 +62,7 @@ class Visualizer extends Component {
 
 function initializeD3(worldMap) {
   const reactContainer = document.getElementById('D3-holder');
-  width = reactContainer.offsetWidth-2;
+  width = reactContainer.offsetWidth-1;
   height = reactContainer.offsetHeight-2;
 
   svg = d3.select('#d3-mount-point').append('svg')
