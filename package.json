@@ -32,8 +32,6 @@
     "react-redux": "^5.0.6",
     "react-tippy": "^1.2.2",
     "react-transition-group": "^2.2.1",
-    "shapefile": "^0.6.6",
-    "topojson-client": "^3.0.0",
-    "topojson-simplify": "^3.0.2"
+    "shapefile": "^0.6.6"
   }
 }
