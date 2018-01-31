@@ -5,11 +5,13 @@ The US Immigration Visualizer displays immigration data from 2005 to 2016. Users
 
 This project is live at: [www.immigration-data.com](http://www.immigration-data.com).
 
-![Image](https://www.dropbox.com/s/t8n45n3vkx5h4ug/imm-vis-prev-1.png?raw=1) ![Image](https://www.dropbox.com/s/6q3cwk8jgjgqcrv/imm-vis-prev-2.png?raw=1)
+![Image](https://www.dropbox.com/s/mjk2ut5cl61pzie/immvis-1.png?raw=1) ![Image](https://www.dropbox.com/s/ptt9pnqehr3hu47/immvis-2.png?raw=1)
+
+![Image](https://www.dropbox.com/s/6uugwb6hdxd7wd2/immvis-3.png?raw=1) ![Image](https://www.dropbox.com/s/7fv6byrx4swlsf7/immvis-4.png?raw=1)
 
 ### Data
 
-All data retrieved the Yearbook of Immigration Statistics published annually by the US Department of Homeland Security.
+All data retrieved from the [Yearbook of Immigration Statistics](https://www.dhs.gov/immigration-statistics/yearbook) published annually by the US Department of Homeland Security.
 
 #### Major Categories
 LPRs:  Lawful Permanent Residents (often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 
