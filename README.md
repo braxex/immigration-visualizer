@@ -6,7 +6,6 @@ The US Immigration Visualizer displays immigration data from 2005 to 2016. Users
 This project is live at: [www.immigration-data.com](http://www.immigration-data.com).
 
 ![Image](https://www.dropbox.com/s/mjk2ut5cl61pzie/immvis-1.png?raw=1) ![Image](https://www.dropbox.com/s/ptt9pnqehr3hu47/immvis-2.png?raw=1)
-
 ![Image](https://www.dropbox.com/s/6uugwb6hdxd7wd2/immvis-3.png?raw=1) ![Image](https://www.dropbox.com/s/7fv6byrx4swlsf7/immvis-4.png?raw=1)
 
 ### Data
@@ -14,13 +13,13 @@ This project is live at: [www.immigration-data.com](http://www.immigration-data.
 All data retrieved from the [Yearbook of Immigration Statistics](https://www.dhs.gov/immigration-statistics/yearbook) published annually by the US Department of Homeland Security.
 
 #### Major Categories
-LPRs:  Lawful Permanent Residents (often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders). 
+LPRs:  Lawful Permanent Residents (often referred to as “immigrants” or “green card holders”) are non-citizens who are lawfully authorized to live permanently in the US. LPRs may apply to become US citizens if they meet certain eligibility requirements. LPRs do not include foreign nationals granted temporary admission to the US, such as tourists and temporary workers (including H1B visa holders).
 
-3-year average: ≈1.08 million people/year. For more information, including information on subcategories, visit [https://goo.gl/dN78yY](https://goo.gl/dN78yY). 
+3-year average: ≈1.08 million people/year. For more information, including information on subcategories, visit [https://goo.gl/dN78yY](https://goo.gl/dN78yY).
 
-NIs:  Nonimmigrants are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission. 
+NIs:  Nonimmigrants are foreign nationals granted temporary admission into the US for reasons including  tourism and business trips, academic/vocational study, temporary employment, and to act as a representative of a foreign government or international organization. NIs are authorized to enter the country for specific purposes and defined periods of time, which are prescribed by their class of admission.
 
-3-year average: ≈76.1 million people/year. For more information, including information on subcategories, visit [https://goo.gl/LJLYzc](https://goo.gl/LJLYzc). 
+3-year average: ≈76.1 million people/year. For more information, including information on subcategories, visit [https://goo.gl/LJLYzc](https://goo.gl/LJLYzc).
 
 
 
@@ -47,6 +46,4 @@ Contact at: [braxton.excell@gmail.com](braxton.excell@gmail.com)
 
 ### Acknowledgements
 
-Thanks to [Nathaniel Allred](https://github.com/neallred) for his guidance and invaluable contributions to this project. 
-
-
+Thanks to [Nathaniel Allred](https://github.com/neallred) for his guidance and invaluable contributions to this project.
