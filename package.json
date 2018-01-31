@@ -10,7 +10,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "node-sass-chokidar src/ -o src/ --output-style compressed && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "build-css": "node-sass-chokidar src/ -o src/",
@@ -18,10 +18,10 @@
   },
   "devDependencies": {
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "bootstrap": "^4.0.0-alpha.6",
-    "d3": "^4.12.0",
-    "d3-geo": "^1.9.0",
-    "d3-geo-projection": "^2.3.1",
+    "bootstrap": "^4.0.0",
+    "d3": "^4.12.2",
+    "d3-geo": "^1.9.1",
+    "d3-geo-projection": "^2.3.2",
     "d3-scale-chromatic": "^1.1.1",
     "d3-selection": "^1.2.0",
     "lodash": "^4.17.4",

@@ -80,10 +80,20 @@ class App extends Component {
     return (
 
       <div className="App">
-
         {/*Header Section*/}
         <header className="App-header">
-          <h1 className="App-title">Immigration Visualizer</h1>
+          <h1 className="App-title">
+            <Tooltip
+              title={this.props.noteItems.headMsg}
+              size='small'
+              position='bottom'
+              trigger='mouseenter'
+              animation='shift'
+              interactive='true'
+              hideOnClick={true}>
+              US Immigration Visualizer
+            </Tooltip>
+          </h1>
         </header>
 
         {/*Modal Section*/}

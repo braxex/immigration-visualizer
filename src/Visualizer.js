@@ -1,6 +1,6 @@
 
 import React, { Component } from 'react';
-import './Visualizer.min.css';
+import './Visualizer.css';
 import * as d3 from 'd3';
 import * as d3geoproj from 'd3-geo-projection';
 import {lprScale, niScale} from './App.js';
