@@ -166,7 +166,8 @@ class App extends Component {
         <div id="controller-box" className="controller-box">
           <div id="toggle-controls" className="toggle-controls">
             <div id='lpr-toggle-box' className='lpr-toggle-box toggle-box'
-              style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#666666'}}>
+              style={{color: this.state.radioDataset==='LPR' ? '#000000' : '#AAAAAA',
+                    backgroundColor: this.state.radioDataset==='LPR' ? '#DDDDDD' : '#FFFFFF'}}>
               <label>
                 <Tooltip
                   title={this.props.noteItems.lprMsg}
@@ -186,7 +187,8 @@ class App extends Component {
               </label>
             </div>
             <div id='ni-toggle-box' className='ni-toggle-box toggle-box'
-              style={{color: this.state.radioDataset==='NI' ? '#000000' : '#666666'}}>
+              style={{color: this.state.radioDataset==='NI' ? '#000000' : '#AAAAAA',
+                    backgroundColor: this.state.radioDataset==='NI' ? '#DDDDDD' : '#FFFFFF'}}>
               <label>
                 <Tooltip
                   title={this.props.noteItems.niMsg}
