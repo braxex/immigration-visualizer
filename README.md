@@ -3,8 +3,6 @@
 
 The US Immigration Visualizer displays immigration data from 2005 to 2016. Users can select what data to view in two major categories and several subcategories. Users can navigate the data years manually using a slider or via slideshow. Detailed data is displayed when users hover over countries.
 
-This project is live at: [www.immigration-data.com](http://www.immigration-data.com).
-
 ![Image](https://www.dropbox.com/s/mjk2ut5cl61pzie/immvis-1.png?raw=1) ![Image](https://www.dropbox.com/s/ptt9pnqehr3hu47/immvis-2.png?raw=1)
 ![Image](https://www.dropbox.com/s/6uugwb6hdxd7wd2/immvis-3.png?raw=1) ![Image](https://www.dropbox.com/s/7fv6byrx4swlsf7/immvis-4.png?raw=1)
 
